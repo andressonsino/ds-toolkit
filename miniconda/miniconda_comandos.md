@@ -205,25 +205,25 @@ pip install -r requirements.txt
 
 ## Arrancar a trabajar
 
-**5.1. Abrir Anaconda Prompt** desde el menú inicio de Windows.
+### 5.1. Abrir Anaconda Prompt** desde el menú inicio de Windows.
 
-**5.2. Activar el entorno:**
+### 5.2. Activar el entorno:**
 ```bash
 conda activate datasci
 ```
 El prompt cambia de `(base)` a `(datasci)`.
 
-**5.3. Ir a la carpeta de repos:**
+### 5.3. Ir a la carpeta de repos:**
 ```bash
 cd C:/ds
 ```
 
-**5.4. Abrir JupyterLab:**
+### 5.4. Abrir JupyterLab:**
 ```bash
 jupyter lab
 ```
 
-**5.5. Entrar al navegador:**
+### 5.5. Entrar al navegador:**
 - Si no abre solo, pegá en el navegador:
 ```
 http://localhost:8888/lab
@@ -233,7 +233,7 @@ http://localhost:8888/lab
 http://localhost:8888/lab?token=XXXXXXXXXXXXXXXX
 ```
 
-**5.6. Trabajar en el notebook:**
+### 5.6. Trabajar en el notebook:**
 - Navegás a la carpeta del repo desde el panel izquierdo
 - Abrís el archivo `.ipynb`
 - Guardás con `Ctrl+S` cada vez que hagas cambios importantes
@@ -244,36 +244,36 @@ http://localhost:8888/lab?token=XXXXXXXXXXXXXXXX
 
 Seguí este orden para liberar toda la memoria RAM y dejar la PC limpia:
 
-**5.7. Guardar el notebook:**
+### 5.7. Guardar el notebook:**
 ```
 Ctrl+S
 ```
 
-**5.8. Cerrar los kernels activos** (esto libera la RAM que usa Python):
+### 5.8. Cerrar los kernels activos** (esto libera la RAM que usa Python):
 ```
 En JupyterLab → Kernel → Shut Down All Kernels
 ```
 
-**5.9. Cerrar JupyterLab correctamente:**
+### 5.9. Cerrar JupyterLab correctamente:**
 ```
 File → Shut Down
 ```
 Esto apaga el servidor de Jupyter. Cerrá también la pestaña del navegador.
 
-**5.10. Confirmar en Anaconda Prompt:**
+### 5.10. Confirmar en Anaconda Prompt:**
 Vas a ver este mensaje en la terminal:
 ```
 [C] Shutdown confirmed
 Jupyter Server stopped.
 ```
 
-**5.11. Desactivar el entorno:**
+### 5.11. Desactivar el entorno:**
 ```bash
 conda deactivate
 ```
 El prompt vuelve a `(base)`.
 
-**5.12. Cerrar Anaconda Prompt.**
+### 5.12. Cerrar Anaconda Prompt.**
 
 ---
 
