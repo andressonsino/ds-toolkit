@@ -197,10 +197,8 @@ pip install -r requirements.txt
 
 ---
 
-## 5. Flujo de trabajo diario
-
-# 🔄 Flujo de Trabajo Diario — Miniconda + JupyterLab
-
+## 5. Flujo de trabajo diario — Miniconda + JupyterLab
+ 
 ---
 
 ## Arrancar a trabajar
