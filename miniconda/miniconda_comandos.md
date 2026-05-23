@@ -199,30 +199,125 @@ pip install -r requirements.txt
 
 ## 5. Flujo de trabajo diario
 
-### Arrancar a trabajar
+# 🔄 Flujo de Trabajo Diario — Miniconda + JupyterLab
 
+---
+
+## Arrancar a trabajar
+
+**5.1. Abrir Anaconda Prompt** desde el menú inicio de Windows.
+
+**5.2. Activar el entorno:**
 ```bash
-# 1. Abrir Anaconda Prompt
-# 2. Activar entorno
 conda activate datasci
+```
+El prompt cambia de `(base)` a `(datasci)`.
 
-# 3. Ir a la carpeta de trabajo
+**5.3. Ir a la carpeta de repos:**
+```bash
 cd C:/ds
+```
 
-# 4. Abrir Jupyter
-jupyter notebook
-# o
+**5.4. Abrir JupyterLab:**
+```bash
 jupyter lab
 ```
 
-### Terminar de trabajar
+**5.5. Entrar al navegador:**
+- Si no abre solo, pegá en el navegador:
+```
+http://localhost:8888/lab
+```
+- Si pide token, copiá la URL completa del Anaconda Prompt que tiene el formato:
+```
+http://localhost:8888/lab?token=XXXXXXXXXXXXXXXX
+```
 
+**5.6. Trabajar en el notebook:**
+- Navegás a la carpeta del repo desde el panel izquierdo
+- Abrís el archivo `.ipynb`
+- Guardás con `Ctrl+S` cada vez que hagas cambios importantes
+
+---
+
+## Terminar de trabajar
+
+Seguí este orden para liberar toda la memoria RAM y dejar la PC limpia:
+
+**5.7. Guardar el notebook:**
+```
+Ctrl+S
+```
+
+**5.8. Cerrar los kernels activos** (esto libera la RAM que usa Python):
+```
+En JupyterLab → Kernel → Shut Down All Kernels
+```
+
+**5.9. Cerrar JupyterLab correctamente:**
+```
+File → Shut Down
+```
+Esto apaga el servidor de Jupyter. Cerrá también la pestaña del navegador.
+
+**5.10. Confirmar en Anaconda Prompt:**
+Vas a ver este mensaje en la terminal:
+```
+[C] Shutdown confirmed
+Jupyter Server stopped.
+```
+
+**5.11. Desactivar el entorno:**
 ```bash
-# 1. Guardar notebooks con Ctrl+S en Jupyter
-# 2. Cerrar Jupyter desde el navegador (File → Shut Down)
-# 3. En la terminal:
 conda deactivate
 ```
+El prompt vuelve a `(base)`.
+
+**5.12. Cerrar Anaconda Prompt.**
+
+---
+
+## Subir cambios a GitHub
+
+Desde **Git Bash** (no desde Anaconda Prompt):
+
+```bash
+cd C:/ds/nombre-del-repo
+git add .
+git commit -m "descripción del cambio"
+git push
+```
+
+> 💡 Hacé esto antes de cerrar JupyterLab para no olvidarte.
+
+---
+
+## Resumen visual
+
+```
+ARRANCAR                          TERMINAR
+────────────────────              ────────────────────────────
+Anaconda Prompt                   Ctrl+S (guardar notebook)
+  ↓                                 ↓
+conda activate datasci            Kernel → Shut Down All Kernels
+  ↓                                 ↓
+cd C:/ds                          File → Shut Down
+  ↓                                 ↓
+jupyter lab                       Cerrar pestaña del navegador
+  ↓                                 ↓
+Abrir navegador                   conda deactivate
+  ↓                                 ↓
+Trabajar                          Cerrar Anaconda Prompt
+  ↓
+Ctrl+S para guardar
+  ↓
+git add . → commit → push
+```
+
+---
+
+> ⚠️ **No cierres el Anaconda Prompt mientras Jupyter esté corriendo** — eso mata el servidor abruptamente y puede corromper notebooks no guardados.
+
 
 ---
 
