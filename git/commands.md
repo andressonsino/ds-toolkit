@@ -31,7 +31,7 @@ Este comando busca automáticamente todas las carpetas que sean repositorios de 
 Ejecutar paratdo en la carpeta raíz (ej. `/c/ds`):
 find . -maxdepth 2 -name ".git" -type d -exec sh -c 'cd "{}"/.. && echo "=== Actualizando $(basename "$PWD") ===" && git pull origin main' \;
 
-###Configuración de Alias (gitup)
+### Configuración de Alias (gitup)
 Para no tener que recordar o copiar el comando largo cada vez, se puede registrar un alias permanente en Git Bash corriendo la siguiente línea una sola vez:
 echo "alias gitup='find . -maxdepth 2 -name \".git\" -type d -exec sh -c '\''cd \"{}\"/.. && echo \"=== Actualizando \$(basename \"\$PWD\") ===\" && git pull origin main'\'' \;'" >> ~/.bashrc
 
