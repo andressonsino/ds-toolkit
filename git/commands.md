@@ -23,6 +23,17 @@ rastrear cambios en un proyecto.
 1. `git add .`: Prepara los cambios.
 2. `git commit -m "Mensaje"`: Guarda el cambio localmente.
 3. `git push`: Sube los cambios a la nube.
+## Sincronización Masiva de Repositorios Git
+
+Este comando busca automáticamente todas las carpetas que sean repositorios de Git dentro del directorio actual (`ds/`) y ejecuta un `git pull origin main` en cada una de ellas de forma secuencial. Evita tener que entrar carpeta por carpeta al iniciar la jornada de trabajo.
+
+### Comando Directo
+Ejecutar paratdo en la carpeta raíz (ej. `/c/ds`):
+find . -maxdepth 2 -name ".git" -type d -exec sh -c 'cd "{}"/.. && echo "=== Actualizando $(basename "$PWD") ===" && git pull origin main' \;
+
+###Configuración de Alias (gitup)
+Para no tener que recordar o copiar el comando largo cada vez, se puede registrar un alias permanente en Git Bash corriendo la siguiente línea una sola vez:
+echo "alias gitup='find . -maxdepth 2 -name \".git\" -type d -exec sh -c '\''cd \"{}\"/.. && echo \"=== Actualizando \$(basename \"\$PWD\") ===\" && git pull origin main'\'' \;'" >> ~/.bashrc
 
 ### Ramas 
 * `git branch`: Lista todas las ramas del repositorio.
