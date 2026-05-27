@@ -23,7 +23,7 @@ rastrear cambios en un proyecto.
 1. `git add .`: Prepara los cambios.
 2. `git commit -m "Mensaje"`: Guarda el cambio localmente.
 3. `git push`: Sube los cambios a la nube.
-## Sincronización Masiva de Repositorios Git
+### Sincronización Masiva de Repositorios Git
 
 Este comando busca automáticamente todas las carpetas que sean repositorios de Git dentro del directorio actual (`ds/`) y ejecuta un `git pull origin main` en cada una de ellas de forma secuencial. Evita tener que entrar carpeta por carpeta al iniciar la jornada de trabajo.
 
