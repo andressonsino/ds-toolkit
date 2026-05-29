@@ -153,7 +153,16 @@ display(nulos[nulos['Nulos'] > 0])
 # ─── Duplicados ────────────────────────────────────────────────────────────
 print(f'\nFilas duplicadas: {df.duplicated().sum()}')
 ```
+## 3.1 Backup de columnas sensibles (opcional pero recomendado)
 
+```python
+# Copia de seguridad - ackup antes de transformar fechas
+df['fecha_venta_original'] = df['fecha_venta']
+
+# Backup antes de imputar nulos numéricos
+df['importe_original'] = df['importe']
+
+```
 ---
 
 ## 4. Duplicados
