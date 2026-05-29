@@ -124,12 +124,6 @@ df.head()
 Esta es la **primera celda que ejecutás** después de cargar. Te da el panorama completo del dataset.
 
 ```python
-# ─── Dimensiones ───────────────────────────────────────────────────────────
-print(f'Filas: {df.shape[0]} | Columnas: {df.shape[1]}')
-
-# ─── Tipos de datos y nulos ────────────────────────────────────────────────
-print('\n--- Info general ---')
-df.info()
 
 # ─── Primeras y últimas filas ──────────────────────────────────────────────
 print('\n--- Primeras 5 filas ---')
@@ -138,9 +132,12 @@ display(df.head())
 print('\n--- Últimas 5 filas ---')
 display(df.tail())
 
-# ─── Estadísticas descriptivas ─────────────────────────────────────────────
-print('\n--- Estadísticas descriptivas ---')
-display(df.describe())
+# ─── Dimensiones ───────────────────────────────────────────────────────────
+print(f'Filas: {df.shape[0]} | Columnas: {df.shape[1]}')
+
+# ─── Tipos de datos y nulos ────────────────────────────────────────────────
+print('\n--- Info general ---')
+df.info()
 
 # ─── Valores nulos por columna ─────────────────────────────────────────────
 print('\n--- Nulos por columna ---')
@@ -152,6 +149,11 @@ display(nulos[nulos['Nulos'] > 0])
 
 # ─── Duplicados ────────────────────────────────────────────────────────────
 print(f'\nFilas duplicadas: {df.duplicated().sum()}')
+
+# ─── Estadísticas descriptivas ─────────────────────────────────────────────
+print('\n--- Estadísticas descriptivas ---')
+display(df.describe())
+
 ```
 ### 3.1 Backup de columnas sensibles (opcional pero recomendado)
 
