@@ -141,11 +141,16 @@ df.info()
 
 # ─── Valores nulos por columna ─────────────────────────────────────────────
 print('\n--- Nulos por columna ---')
-nulos = pd.DataFrame({
-    'Nulos': df.isnull().sum(),
-    'Porcentaje': (df.isnull().sum() / len(df) * 100).round(2)
-})
-display(nulos[nulos['Nulos'] > 0])
+# Verificamos si hay algún nulo en toda la tabla
+if df_raw.isnull().sum().sum() == 0:
+    print('✅ Sin valores nulos')
+else:
+    # Sino mostramos tabla filtrada de nulos
+    nulos = pd.DataFrame({
+        'Nulos': df_raw.isnull().sum(),
+        'Porcentaje': (df_raw.isnull().sum() / len(df_raw) * 100).round(2)
+    })
+    display(nulos[nulos['Nulos'] > 0])
 
 # ─── Duplicados ────────────────────────────────────────────────────────────
 print(f'\nFilas duplicadas: {df.duplicated().sum()}')
