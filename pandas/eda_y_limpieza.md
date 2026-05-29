@@ -26,6 +26,27 @@
 
 ---
 
+## Orden recomendado del flujo completo
+
+```
+1. Setup (imports + warnings)
+2. Carga del dataset
+3. Diagnóstico inicial (shape, info, describe, nulos, duplicados)
+4. Eliminar duplicados
+5. Tratar nulos (imputar o eliminar)
+6. Convertir tipos de datos
+7. Reset de índice
+8. Tratar outliers
+9. Limpiar inconsistencias de texto
+10. Renombrar columnas
+11. Crear columnas derivadas
+12. Análisis estadístico (groupby, correlación)
+13. Visualizaciones
+14. Exportar dataset limpio
+```
+
+---
+
 ## 1. Setup inicial y supresión de warnings
 
 Siempre arrancá el notebook con esta celda. Suprime los warnings de librerías que no son errores reales y configuran el entorno de trabajo.
@@ -584,25 +605,5 @@ print('='*50)
 
 ---
 
-## Orden recomendado del flujo completo
-
-```
-1. Setup (imports + warnings)
-2. Carga del dataset
-3. Diagnóstico inicial (shape, info, describe, nulos, duplicados)
-4. Eliminar duplicados
-5. Tratar nulos (imputar o eliminar)
-6. Convertir tipos de datos
-7. Reset de índice
-8. Tratar outliers
-9. Limpiar inconsistencias de texto
-10. Renombrar columnas
-11. Crear columnas derivadas
-12. Análisis estadístico (groupby, correlación)
-13. Visualizaciones
-14. Exportar dataset limpio
-```
-
----
 
 *Guía elaborada para uso personal y académico · Pandas Documentation: [pandas.pydata.org](https://pandas.pydata.org/docs/)*
