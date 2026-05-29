@@ -156,11 +156,11 @@ print(f'\nFilas duplicadas: {df.duplicated().sum()}')
 ### 3.1 Backup de columnas sensibles (opcional pero recomendado)
 
 ```python
-# Copia de seguridad - ackup antes de transformar fechas
-df['fecha_venta_original'] = df['fecha_venta']
+# Copia de seguridad - backup antes de transformar fechas
+df['fecha_venta_original'] = df['fecha_venta'].copy()
 
 # Backup antes de imputar nulos numéricos
-df['importe_original'] = df['importe']
+df['importe_original'] = df['importe'].copy()
 
 ```
 ---
