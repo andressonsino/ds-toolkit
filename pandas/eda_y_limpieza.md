@@ -135,7 +135,7 @@ display(df.tail())
 # ─── Dimensiones ───────────────────────────────────────────────────────────
 print(f'Filas: {df.shape[0]} | Columnas: {df.shape[1]}')
 
-# ─── Tipos de datos y nulos ────────────────────────────────────────────────
+# ─── Tipos de datos ────────────────────────────────────────────────────────
 print('\n--- Info general ---')
 df.info()
 
