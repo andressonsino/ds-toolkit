@@ -153,7 +153,7 @@ display(nulos[nulos['Nulos'] > 0])
 # ─── Duplicados ────────────────────────────────────────────────────────────
 print(f'\nFilas duplicadas: {df.duplicated().sum()}')
 ```
-## 3.1 Backup de columnas sensibles (opcional pero recomendado)
+### 3.1 Backup de columnas sensibles (opcional pero recomendado)
 
 ```python
 # Copia de seguridad - ackup antes de transformar fechas
