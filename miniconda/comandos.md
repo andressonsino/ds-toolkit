@@ -11,7 +11,7 @@
 2. [Instalación y configuración inicial](#2-instalación-y-configuración-inicial)
 3. [Gestión de entornos](#3-gestión-de-entornos)
 4. [Gestión de paquetes](#4-gestión-de-paquetes)
-5. [Flujo de trabajo diario](#5-flujo-de-trabajo-diario--miniconda-+-jupyterlab)
+5. [Flujo de trabajo diario](#5-flujo-de-trabajo-diario---miniconda-y-jupyterlab)
 6. [Jupyter desde Miniconda](#6-jupyter-desde-miniconda)
 7. [Solución de problemas comunes](#7-solución-de-problemas-comunes)
 8. [Comandos avanzados](#8-comandos-avanzados)
@@ -197,7 +197,7 @@ pip install -r requirements.txt
 
 ---
 
-## 5. Flujo de trabajo diario — Miniconda + JupyterLab
+## 5. Flujo de trabajo diario - Miniconda y JupyterLab
  
 ---
 
