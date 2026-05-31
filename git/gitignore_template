@@ -223,6 +223,7 @@ secrets.py
 drive/
 
 # Datos - no subir datasets
+# AGREGAR ESTO AL GITIGNORE POR DEFECTO DE GITHUB
 data/
 *.csv
 *.xlsx
