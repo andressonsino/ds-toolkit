@@ -222,10 +222,7 @@ secrets.py
 .config/
 drive/
 
-# ==============================================================
 # AGREGAR ESTO AL GITIGNORE POR DEFECTO DE GITHUB
-# ==============================================================
-
 # Datos - no subir datasets
 data/
 *.csv
