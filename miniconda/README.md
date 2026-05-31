@@ -17,5 +17,4 @@ pip install jupyter pandas numpy matplotlib scikit-learn tensorflow scipy seabor
 ```
 
 > ⚠️ Si tu usuario Windows tiene caracteres especiales (`é`, `ñ`, espacios), usá siempre `--prefix` con una ruta limpia para evitar errores de OpenSSL.
->
-> | `flujo_trabajo_diario.md` | Arrancar y cerrar el entorno correctamente |
+

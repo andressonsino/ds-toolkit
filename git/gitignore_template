@@ -1,0 +1,33 @@
+# Datos — nunca subir al repositorio
+data/
+*.csv
+*.xlsx
+*.zip
+*.tar.gz
+
+# Entornos virtuales
+.env
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Modelos entrenados (pueden ser pesados)
+*.h5
+*.pkl
+*.joblib
+*.pt
+*.pth
+
+# OS
+.DS_Store
+Thumbs.db
