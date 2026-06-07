@@ -36,11 +36,13 @@ Para no tener que recordar o copiar el comando largo cada vez, se puede registra
 echo "alias gitup='find . -maxdepth 2 -name \".git\" -type d -exec sh -c '\''cd \"{}\"/.. && echo \"=== Actualizando \$(basename \"\$PWD\") ===\" && git pull origin main'\'' \;'" >> ~/.bashrc
 
 ### Ramas 
-* `git branch`: Lista todas las ramas del repositorio.
+* `git branch`: Lista todas las ramas del repositorio y visualización de en cuál estás.
 * `git branch <nombre_de_rama>`: Crea una nueva rama.
-* `git checkout <nombre_de_rama>`: Cambia a otra rama para empezar a trabajar en ella.
+* `git switch <nombre_de_rama> o git checkout <nombre_de_rama>`: Cambia a otra rama para empezar a trabajar en ella.
+* `git fetch`: Actualiza la cantidad de ramas, si es que se crearon nuevas desde Github.
 * `git merge <nombre_de_rama>`: Fusiona los cambios de la rama especificada a la rama en la que te
 encuentras.
+* `git switch <nombre_de_rama>`: Crear una rama nueva local y pasarte a ella en un solo paso.
 * `git push -u origin <nombre_de_rama>`: La primera vez que subes una rama, usas este comando para
 establecer la conexión y subir los cambios.
 
