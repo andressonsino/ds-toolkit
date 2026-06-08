@@ -19,7 +19,7 @@ Asegurate de estar ubicado en la misma carpeta donde vive tu archivo .ipynb.
 Escribí el siguiente comando (reemplazando tp-12.ipynb por el nombre real de tu archivo) y apretá Enter:
 
 ```
-jupyter nbconvert --to html --no-input tp-12.ipynb
+jupyter nbconvert --to html --no-input nombre_cuaderno.ipynb
 ```
 ## 💡 Desglose del comando para entenderlo:
 
@@ -29,7 +29,7 @@ jupyter nbconvert: Es el motor de Jupyter que se encarga de convertir formatos.
 
 --no-input: ¡La clave del éxito! Es la orden estricta que le dice a Python "Eliminá todas las celdas de entrada (código) de esta copia".
 
-tp-12.ipynb: El nombre de tu archivo original que vas a fotocopiar.
+nombre_cuaderno.ipynb: El nombre de tu archivo original que vas a fotocopiar.
 
 ## 📂 ¿Dónde encuentro mi reporte?
 Una vez que el comando termine de correr, andá a tu explorador de archivos. Justo al lado de tu cuaderno original de Jupyter, va a aparecer un archivo nuevito llamado tp-12.html. ¡Ese es el que le mandás al cliente!

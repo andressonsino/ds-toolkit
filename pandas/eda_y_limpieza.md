@@ -84,10 +84,10 @@ sns.set_palette('husl')                      # paleta de colores
 ### 2.1 Desde archivo local (Jupyter Lab)
 
 ```python
-df = pd.read_csv('ventas.csv')
+df_raw = pd.read_csv('ventas.csv')
 
 # Con opciones adicionales
-df = pd.read_csv(
+df_raw = pd.read_csv(
     'ventas.csv',
     sep=',',              # separador (puede ser ';' en archivos europeos)
     encoding='utf-8',     # encoding (probar 'latin-1' si falla)
@@ -99,7 +99,7 @@ df = pd.read_csv(
 
 ```python
 from google.colab import files
-df = pd.read_csv(list(files.upload().keys())[0])
+df_raw = pd.read_csv(list(files.upload().keys())[0])
 ```
 
 ### 2.3 Desde Google Drive (Colab)
@@ -107,14 +107,14 @@ df = pd.read_csv(list(files.upload().keys())[0])
 ```python
 from google.colab import drive
 drive.mount('/content/drive')
-df = pd.read_csv('/content/drive/MyDrive/ventas.csv')
+df_raw = pd.read_csv('/content/drive/MyDrive/ventas.csv')
 ```
 
 ### 2.4 Verificar carga exitosa
 
 ```python
-print(f'Dataset cargado: {df.shape[0]} filas x {df.shape[1]} columnas')
-df.head()
+print(f'Dataset cargado: {df_raw.shape[0]} filas x {df_raw.shape[1]} columnas')
+df_raw.head()
 ```
 
 ---
@@ -127,47 +127,47 @@ Esta es la **primera celda que ejecutás** después de cargar. Te da el panorama
 
 # ─── Primeras y últimas filas ──────────────────────────────────────────────
 print('\n--- Primeras 5 filas ---')
-display(df.head())
+display(df_raw.head())
 
 print('\n--- Últimas 5 filas ---')
-display(df.tail())
+display(df_raw.tail())
 
 # ─── Dimensiones ───────────────────────────────────────────────────────────
-print(f'Filas: {df.shape[0]} | Columnas: {df.shape[1]}')
+print(f'Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}')
 
 # ─── Tipos de datos ────────────────────────────────────────────────────────
 print('\n--- Info general ---')
-df.info()
+df_raw.info()
 
 # ─── Valores nulos por columna ─────────────────────────────────────────────
 print('\n--- Nulos por columna ---')
 # Verificamos si hay algún nulo en toda la tabla
-if df_raw.isnull().sum().sum() == 0:
+if df_raw_raw.isnull().sum().sum() == 0:
     print('✅ Sin valores nulos')
 else:
     # Sino mostramos tabla filtrada de nulos
     nulos = pd.DataFrame({
-        'Nulos': df_raw.isnull().sum(),
-        'Porcentaje': (df_raw.isnull().sum() / len(df_raw) * 100).round(2)
+        'Nulos': df_raw_raw.isnull().sum(),
+        'Porcentaje': (df_raw_raw.isnull().sum() / len(df_raw_raw) * 100).round(2)
     })
     display(nulos[nulos['Nulos'] > 0])
 
 # ─── Duplicados ────────────────────────────────────────────────────────────
-print(f'\nFilas duplicadas: {df.duplicated().sum()}')
+print(f'\nFilas duplicadas: {df_raw.duplicated().sum()}')
 
 # ─── Estadísticas descriptivas ─────────────────────────────────────────────
 print('\n--- Estadísticas descriptivas ---')
-display(df.describe())
+display(df_raw.describe())
 
 ```
 ### 3.1 Backup de columnas sensibles (opcional pero recomendado)
 
 ```python
 # Copia de seguridad - backup antes de transformar fechas
-df['fecha_venta_original'] = df['fecha_venta'].copy()
+df_raw['fecha_venta_original'] = df_raw['fecha_venta'].copy()
 
 # Backup antes de imputar nulos numéricos
-df['importe_original'] = df['importe'].copy()
+df_raw['importe_original'] = df_raw['importe'].copy()
 
 ```
 ---
@@ -178,33 +178,33 @@ df['importe_original'] = df['importe'].copy()
 
 ```python
 # Cantidad total
-print(f'Duplicados: {df.duplicated().sum()}')
+print(f'Duplicados: {df_raw.duplicated().sum()}')
 
 # Ver las filas duplicadas
-display(df[df.duplicated(keep=False)])  # muestra todas las copias
+display(df_raw[df_raw.duplicated(keep=False)])  # muestra todas las copias
 
 # Duplicados por columnas específicas (no fila completa)
-print(df.duplicated(subset=['Vendedor', 'Fecha']).sum())
+print(df_raw.duplicated(subset=['Vendedor', 'Fecha']).sum())
 ```
 
 ### 4.2 Eliminar duplicados
 
 ```python
 # Eliminar y guardar en el mismo DataFrame
-df = df.drop_duplicates()
+df_raw = df_raw.drop_duplicates()
 
 # Mantener primera o última ocurrencia
-df = df.drop_duplicates(keep='first')  # default
-df = df.drop_duplicates(keep='last')
+df_raw = df_raw.drop_duplicates(keep='first')  # default
+df_raw = df_raw.drop_duplicates(keep='last')
 
 # Eliminar por columnas específicas
-df = df.drop_duplicates(subset=['Vendedor', 'Fecha'])
+df_raw = df_raw.drop_duplicates(subset=['Vendedor', 'Fecha'])
 
 # Verificar
-print(f'Duplicados restantes: {df.duplicated().sum()}')
+print(f'Duplicados restantes: {df_raw.duplicated().sum()}')
 ```
 
-> ⚠️ **Siempre asigná el resultado** `df = df.drop_duplicates()`. Sin la asignación, pandas muestra el resultado pero no modifica el DataFrame original.
+> ⚠️ **Siempre asigná el resultado** `df_raw = df_raw.drop_duplicates()`. Sin la asignación, pandas muestra el resultado pero no modifica el DataFrame original.
 
 ---
 
@@ -215,9 +215,9 @@ print(f'Duplicados restantes: {df.duplicated().sum()}')
 ```python
 # Mapa completo de nulos
 nulos = pd.DataFrame({
-    'Nulos': df.isnull().sum(),
-    'Porcentaje': (df.isnull().sum() / len(df) * 100).round(2),
-    'Tipo': df.dtypes
+    'Nulos': df_raw.isnull().sum(),
+    'Porcentaje': (df_raw.isnull().sum() / len(df_raw) * 100).round(2),
+    'Tipo': df_raw.dtypes
 })
 display(nulos[nulos['Nulos'] > 0].sort_values('Porcentaje', ascending=False))
 ```
@@ -236,37 +236,37 @@ La estrategia depende del porcentaje de nulos y del tipo de columna:
 # ─── Imputar con MEDIANA (columnas numéricas con outliers) ──────────────────
 # Usar cuando hay valores extremos que distorsionan el promedio
 # Ej: salarios, satisfacción, precios
-mediana = df['Satisfaccion_Cliente'].median()
-df['Satisfaccion_Cliente'] = df['Satisfaccion_Cliente'].fillna(mediana)
+mediana = df_raw['Satisfaccion_Cliente'].median()
+df_raw['Satisfaccion_Cliente'] = df_raw['Satisfaccion_Cliente'].fillna(mediana)
 
 # ─── Imputar con MEDIA (columnas numéricas sin outliers) ───────────────────
 # Usar cuando la distribución es simétrica y sin extremos
 # Ej: temperatura, peso, altura
-media = df['Temperatura'].mean()
-df['Temperatura'] = df['Temperatura'].fillna(media)
+media = df_raw['Temperatura'].mean()
+df_raw['Temperatura'] = df_raw['Temperatura'].fillna(media)
 
 # ─── Imputar con MODA (columnas categóricas) ───────────────────────────────
 # Usar para texto o categorías — el valor más frecuente
-moda = df['Ciudad'].mode()[0]
-df['Ciudad'] = df['Ciudad'].fillna(moda)
+moda = df_raw['Ciudad'].mode()[0]
+df_raw['Ciudad'] = df_raw['Ciudad'].fillna(moda)
 
 # ─── Imputar con un valor fijo ─────────────────────────────────────────────
-df['Estado'] = df['Estado'].fillna('Desconocido')
-df['Cantidad'] = df['Cantidad'].fillna(0)
+df_raw['Estado'] = df_raw['Estado'].fillna('Desconocido')
+df_raw['Cantidad'] = df_raw['Cantidad'].fillna(0)
 
 # ─── Eliminar filas con nulos ──────────────────────────────────────────────
 # Cuando el % es bajo y no afecta el análisis
-df = df.dropna(subset=['Columna_Critica'])
+df_raw = df_raw.dropna(subset=['Columna_Critica'])
 
 # Eliminar filas con cualquier nulo
-df = df.dropna()
+df_raw = df_raw.dropna()
 
 # ─── Eliminar columna entera ───────────────────────────────────────────────
 # Cuando tiene demasiados nulos y no aporta valor
-df = df.drop(columns=['Columna_Con_Muchos_Nulos'])
+df_raw = df_raw.drop(columns=['Columna_Con_Muchos_Nulos'])
 
 # ─── Verificar que no quedan nulos ─────────────────────────────────────────
-print(df.isnull().sum())
+print(df_raw.isnull().sum())
 ```
 
 > 💡 **Media vs Mediana:**  
@@ -284,7 +284,7 @@ Hacé las conversiones **después de limpiar nulos y duplicados**, antes de hace
 
 ```python
 # Ver tipos actuales
-print(df.dtypes)
+print(df_raw.dtypes)
 ```
 
 ### 6.2 Conversiones comunes
@@ -292,34 +292,34 @@ print(df.dtypes)
 ```python
 # ─── Fechas (muy común en datasets reales) ─────────────────────────────────
 # Si no se parsearon al cargar el CSV
-df['Fecha'] = pd.to_datetime(df['Fecha'])
-df['Fecha_Venta'] = pd.to_datetime(df['Fecha_Venta'], format='%Y/%m/%d')  # formato específico
-df['Fecha_Venta'] = pd.to_datetime(df['Fecha_Venta'], errors='coerce')    # NaN si no puede parsear
+df_raw['Fecha'] = pd.to_datetime(df_raw['Fecha'])
+df_raw['Fecha_Venta'] = pd.to_datetime(df_raw['Fecha_Venta'], format='%Y/%m/%d')  # formato específico
+df_raw['Fecha_Venta'] = pd.to_datetime(df_raw['Fecha_Venta'], errors='coerce')    # NaN si no puede parsear
 
 # Extraer partes de una fecha
-df['Año'] = df['Fecha'].dt.year
-df['Mes'] = df['Fecha'].dt.month
-df['Dia_Semana'] = df['Fecha'].dt.day_name()
+df_raw['Año'] = df_raw['Fecha'].dt.year
+df_raw['Mes'] = df_raw['Fecha'].dt.month
+df_raw['Dia_Semana'] = df_raw['Fecha'].dt.day_name()
 
 # ─── Numéricos ──────────────────────────────────────────────────────────────
-df['Importe'] = pd.to_numeric(df['Importe'], errors='coerce')  # NaN si falla
-df['Edad'] = df['Edad'].astype(int)
-df['Precio'] = df['Precio'].astype(float)
+df_raw['Importe'] = pd.to_numeric(df_raw['Importe'], errors='coerce')  # NaN si falla
+df_raw['Edad'] = df_raw['Edad'].astype(int)
+df_raw['Precio'] = df_raw['Precio'].astype(float)
 
 # ─── Texto ──────────────────────────────────────────────────────────────────
-df['Nombre'] = df['Nombre'].astype(str)
+df_raw['Nombre'] = df_raw['Nombre'].astype(str)
 
 # ─── Categórico (ahorra memoria en columnas con pocos valores únicos) ───────
-df['Ciudad'] = df['Ciudad'].astype('category')
-df['Prioridad'] = pd.Categorical(df['Prioridad'],
+df_raw['Ciudad'] = df_raw['Ciudad'].astype('category')
+df_raw['Prioridad'] = pd.Categorical(df_raw['Prioridad'],
                                   categories=['Baja', 'Media', 'Alta'],
                                   ordered=True)  # con orden lógico
 
 # ─── Booleano ───────────────────────────────────────────────────────────────
-df['Activo'] = df['Activo'].astype(bool)
+df_raw['Activo'] = df_raw['Activo'].astype(bool)
 
 # ─── Verificar después de convertir ────────────────────────────────────────
-print(df.dtypes)
+print(df_raw.dtypes)
 ```
 
 ### 6.3 Limpiar columnas numéricas con formato texto
@@ -327,10 +327,10 @@ print(df.dtypes)
 ```python
 # Columna con $ o . o , que impide convertir a número
 # Ej: '$1.234,56' → 1234.56
-df['Precio'] = df['Precio'].str.replace('$', '', regex=False)
-df['Precio'] = df['Precio'].str.replace('.', '', regex=False)
-df['Precio'] = df['Precio'].str.replace(',', '.', regex=False)
-df['Precio'] = pd.to_numeric(df['Precio'], errors='coerce')
+df_raw['Precio'] = df_raw['Precio'].str.replace('$', '', regex=False)
+df_raw['Precio'] = df_raw['Precio'].str.replace('.', '', regex=False)
+df_raw['Precio'] = df_raw['Precio'].str.replace(',', '.', regex=False)
+df_raw['Precio'] = pd.to_numeric(df_raw['Precio'], errors='coerce')
 ```
 
 ---
@@ -348,7 +348,7 @@ El índice se "rompe" (queda con huecos o desordenado) después de:
 # Antes: índice con huecos
 # 0, 1, 3, 5, 7...  ← el 2, 4, 6 fueron eliminados
 
-df = df.reset_index(drop=True)
+df_raw = df_raw.reset_index(drop=True)
 # Después: índice limpio
 # 0, 1, 2, 3, 4...
 
@@ -365,15 +365,15 @@ df = df.reset_index(drop=True)
 
 ```python
 # 1. Eliminar duplicados
-df = df.drop_duplicates()
+df_raw = df_raw.drop_duplicates()
 
 # 2. Eliminar nulos
-df = df.dropna(subset=['Columna_Critica'])
+df_raw = df_raw.dropna(subset=['Columna_Critica'])
 
 # 3. Resetear índice → DESPUÉS de todas las eliminaciones
-df = df.reset_index(drop=True)
+df_raw = df_raw.reset_index(drop=True)
 
-print(f'Dataset final: {df.shape[0]} filas')
+print(f'Dataset final: {df_raw.shape[0]} filas')
 ```
 
 ---
@@ -383,21 +383,21 @@ print(f'Dataset final: {df.shape[0]} filas')
 ### 8.1 Detectar outliers con IQR
 
 ```python
-def detectar_outliers_iqr(df, columna):
-    Q1 = df[columna].quantile(0.25)
-    Q3 = df[columna].quantile(0.75)
+def detectar_outliers_iqr(df_raw, columna):
+    Q1 = df_raw[columna].quantile(0.25)
+    Q3 = df_raw[columna].quantile(0.75)
     IQR = Q3 - Q1
     limite_inferior = Q1 - 1.5 * IQR
     limite_superior = Q3 + 1.5 * IQR
 
-    outliers = df[(df[columna] < limite_inferior) | (df[columna] > limite_superior)]
+    outliers = df_raw[(df_raw[columna] < limite_inferior) | (df_raw[columna] > limite_superior)]
     print(f'Columna: {columna}')
     print(f'Rango normal: [{limite_inferior:.2f}, {limite_superior:.2f}]')
-    print(f'Outliers encontrados: {len(outliers)} ({len(outliers)/len(df)*100:.1f}%)\n')
+    print(f'Outliers encontrados: {len(outliers)} ({len(outliers)/len(df_raw)*100:.1f}%)\n')
     return outliers
 
 # Usar para columnas numéricas
-outliers_importe = detectar_outliers_iqr(df, 'Importe')
+outliers_importe = detectar_outliers_iqr(df_raw, 'Importe')
 ```
 
 ### 8.2 Visualizar outliers
@@ -405,7 +405,7 @@ outliers_importe = detectar_outliers_iqr(df, 'Importe')
 ```python
 # Boxplot
 plt.figure(figsize=(10, 4))
-df[['Importe', 'Comision_x_venta']].boxplot()
+df_raw[['Importe', 'Comision_x_venta']].boxplot()
 plt.title('Distribución con outliers')
 plt.show()
 ```
@@ -414,14 +414,14 @@ plt.show()
 
 ```python
 # Opción 1: Eliminar filas con outliers
-Q1 = df['Importe'].quantile(0.25)
-Q3 = df['Importe'].quantile(0.75)
+Q1 = df_raw['Importe'].quantile(0.25)
+Q3 = df_raw['Importe'].quantile(0.75)
 IQR = Q3 - Q1
-df = df[(df['Importe'] >= Q1 - 1.5*IQR) & (df['Importe'] <= Q3 + 1.5*IQR)]
+df_raw = df_raw[(df_raw['Importe'] >= Q1 - 1.5*IQR) & (df_raw['Importe'] <= Q3 + 1.5*IQR)]
 
 # Opción 2: Capping — reemplazar por el límite
 limite_sup = Q3 + 1.5 * IQR
-df['Importe'] = df['Importe'].clip(upper=limite_sup)
+df_raw['Importe'] = df_raw['Importe'].clip(upper=limite_sup)
 
 # Opción 3: Dejarlos (si tienen sentido de negocio)
 # Un importe muy alto puede ser una venta real, no un error
@@ -433,16 +433,16 @@ df['Importe'] = df['Importe'].clip(upper=limite_sup)
 
 ```python
 # ─── Espacios extra ─────────────────────────────────────────────────────────
-df['Ciudad'] = df['Ciudad'].str.strip()         # quita espacios al inicio y fin
-df['Ciudad'] = df['Ciudad'].str.strip().str.replace(r'\s+', ' ', regex=True)  # espacios dobles
+df_raw['Ciudad'] = df_raw['Ciudad'].str.strip()         # quita espacios al inicio y fin
+df_raw['Ciudad'] = df_raw['Ciudad'].str.strip().str.replace(r'\s+', ' ', regex=True)  # espacios dobles
 
 # ─── Mayúsculas/minúsculas ──────────────────────────────────────────────────
-df['Ciudad'] = df['Ciudad'].str.title()   # Primera Letra Mayúscula
-df['Ciudad'] = df['Ciudad'].str.upper()   # TODO MAYÚSCULAS
-df['Ciudad'] = df['Ciudad'].str.lower()   # todo minúsculas
+df_raw['Ciudad'] = df_raw['Ciudad'].str.title()   # Primera Letra Mayúscula
+df_raw['Ciudad'] = df_raw['Ciudad'].str.upper()   # TODO MAYÚSCULAS
+df_raw['Ciudad'] = df_raw['Ciudad'].str.lower()   # todo minúsculas
 
 # ─── Valores mal escritos ───────────────────────────────────────────────────
-df['Rubro'] = df['Rubro'].str.replace('electrodomesticos', 'electrodomésticos')
+df_raw['Rubro'] = df_raw['Rubro'].str.replace('electrodomesticos', 'electrodomésticos')
 
 # Reemplazar múltiples valores
 reemplazos = {
@@ -450,11 +450,11 @@ reemplazos = {
     'Bsas': 'Buenos Aires',
     'CABA': 'Buenos Aires'
 }
-df['Ciudad'] = df['Ciudad'].replace(reemplazos)
+df_raw['Ciudad'] = df_raw['Ciudad'].replace(reemplazos)
 
 # ─── Ver valores únicos para detectar inconsistencias ───────────────────────
-print(df['Ciudad'].value_counts())
-print(df['Rubro'].unique())
+print(df_raw['Ciudad'].value_counts())
+print(df_raw['Rubro'].unique())
 ```
 
 ---
@@ -463,7 +463,7 @@ print(df['Rubro'].unique())
 
 ```python
 # ─── Renombrar columnas específicas ────────────────────────────────────────
-df = df.rename(columns={
+df_raw = df_raw.rename(columns={
     'Satisfaccion_cliente': 'satisfaccion_encuesta',
     'Satisfaccion_Cliente': 'satisfaccion_sistema',
     'Fecha_Venta': 'fecha_venta'
@@ -471,7 +471,7 @@ df = df.rename(columns={
 
 # ─── Limpiar todos los nombres de columnas ─────────────────────────────────
 # Minúsculas, sin espacios, sin caracteres especiales
-df.columns = (df.columns
+df_raw.columns = (df_raw.columns
               .str.lower()
               .str.strip()
               .str.replace(' ', '_')
@@ -479,7 +479,7 @@ df.columns = (df.columns
               .str.replace('í', 'i').str.replace('ó', 'o')
               .str.replace('ú', 'u').str.replace('ñ', 'n'))
 
-print(df.columns.tolist())
+print(df_raw.columns.tolist())
 ```
 
 ---
@@ -488,25 +488,25 @@ print(df.columns.tolist())
 
 ```python
 # ─── Columna calculada ──────────────────────────────────────────────────────
-df['margen'] = df['importe'] - df['costo']
-df['margen_pct'] = (df['margen'] / df['importe'] * 100).round(2)
+df_raw['margen'] = df_raw['importe'] - df_raw['costo']
+df_raw['margen_pct'] = (df_raw['margen'] / df_raw['importe'] * 100).round(2)
 
 # ─── Columna condicional (np.where) ─────────────────────────────────────────
-df['categoria_venta'] = np.where(df['importe'] > 300000, 'Alto', 'Normal')
+df_raw['categoria_venta'] = np.where(df_raw['importe'] > 300000, 'Alto', 'Normal')
 
 # ─── Columna con múltiples condiciones ─────────────────────────────────────
 condiciones = [
-    df['importe'] >= 400000,
-    df['importe'] >= 200000,
-    df['importe'] < 200000
+    df_raw['importe'] >= 400000,
+    df_raw['importe'] >= 200000,
+    df_raw['importe'] < 200000
 ]
 valores = ['Premium', 'Medio', 'Basico']
-df['segmento'] = np.select(condiciones, valores)
+df_raw['segmento'] = np.select(condiciones, valores)
 
 # ─── Columna desde fecha ────────────────────────────────────────────────────
-df['año'] = df['fecha'].dt.year
-df['trimestre'] = df['fecha'].dt.quarter
-df['mes_nombre'] = df['fecha'].dt.month_name()
+df_raw['año'] = df_raw['fecha'].dt.year
+df_raw['trimestre'] = df_raw['fecha'].dt.quarter
+df_raw['mes_nombre'] = df_raw['fecha'].dt.month_name()
 ```
 
 ---
@@ -515,7 +515,7 @@ df['mes_nombre'] = df['fecha'].dt.month_name()
 
 ```python
 # ─── Estadísticas por grupo ─────────────────────────────────────────────────
-resumen = df.groupby('sede').agg(
+resumen = df_raw.groupby('sede').agg(
     total_ventas=('importe', 'sum'),
     promedio_venta=('importe', 'mean'),
     cantidad=('importe', 'count'),
@@ -525,12 +525,12 @@ resumen = df.groupby('sede').agg(
 display(resumen)
 
 # ─── Correlación entre variables numéricas ──────────────────────────────────
-correlacion = df[['importe', 'comision_x_venta', 'satisfaccion_cliente']].corr()
+correlacion = df_raw[['importe', 'comision_x_venta', 'satisfaccion_cliente']].corr()
 display(correlacion)
 
 # ─── Tabla de frecuencias ───────────────────────────────────────────────────
-print(df['rubro'].value_counts())
-print(df['rubro'].value_counts(normalize=True).round(3) * 100)  # en porcentaje
+print(df_raw['rubro'].value_counts())
+print(df_raw['rubro'].value_counts(normalize=True).round(3) * 100)  # en porcentaje
 ```
 
 ---
@@ -542,22 +542,22 @@ fig, axes = plt.subplots(2, 2, figsize=(14, 10))
 fig.suptitle('Análisis Exploratorio de Datos', fontsize=16, fontweight='bold')
 
 # ─── Distribución de variable numérica ─────────────────────────────────────
-axes[0, 0].hist(df['importe'], bins=30, color='steelblue', edgecolor='white')
+axes[0, 0].hist(df_raw['importe'], bins=30, color='steelblue', edgecolor='white')
 axes[0, 0].set_title('Distribución de Importes')
 axes[0, 0].set_xlabel('Importe')
 
 # ─── Ventas por categoría ───────────────────────────────────────────────────
-ventas_rubro = df.groupby('rubro')['importe'].sum().sort_values(ascending=True)
+ventas_rubro = df_raw.groupby('rubro')['importe'].sum().sort_values(ascending=True)
 axes[0, 1].barh(ventas_rubro.index, ventas_rubro.values, color='coral')
 axes[0, 1].set_title('Ventas por Rubro')
 
 # ─── Boxplot para outliers ──────────────────────────────────────────────────
-axes[1, 0].boxplot(df['importe'].dropna())
+axes[1, 0].boxplot(df_raw['importe'].dropna())
 axes[1, 0].set_title('Outliers en Importe')
 
 # ─── Evolución temporal ─────────────────────────────────────────────────────
-if 'fecha' in df.columns:
-    ventas_mes = df.groupby(df['fecha'].dt.to_period('M'))['importe'].sum()
+if 'fecha' in df_raw.columns:
+    ventas_mes = df_raw.groupby(df_raw['fecha'].dt.to_period('M'))['importe'].sum()
     axes[1, 1].plot(ventas_mes.index.astype(str), ventas_mes.values, marker='o')
     axes[1, 1].set_title('Evolución de Ventas por Mes')
     axes[1, 1].tick_params(axis='x', rotation=45)
@@ -572,20 +572,20 @@ plt.show()
 
 ```python
 # ─── Guardar CSV limpio ─────────────────────────────────────────────────────
-df.to_csv('ventas_limpio.csv', index=False, encoding='utf-8')
+df_raw.to_csv('ventas_limpio.csv', index=False, encoding='utf-8')
 print('Dataset exportado como ventas_limpio.csv')
 
 # ─── Guardar Excel ──────────────────────────────────────────────────────────
-df.to_excel('ventas_limpio.xlsx', index=False, sheet_name='Datos')
+df_raw.to_excel('ventas_limpio.xlsx', index=False, sheet_name='Datos')
 
 # ─── Guardar con fecha en el nombre ─────────────────────────────────────────
 from datetime import datetime
 fecha_hoy = datetime.now().strftime('%Y%m%d')
-df.to_csv(f'ventas_limpio_{fecha_hoy}.csv', index=False)
+df_raw.to_csv(f'ventas_limpio_{fecha_hoy}.csv', index=False)
 
 # ─── Verificar archivo exportado ────────────────────────────────────────────
-df_verificacion = pd.read_csv('ventas_limpio.csv')
-print(f'Archivo exportado: {df_verificacion.shape[0]} filas x {df_verificacion.shape[1]} columnas')
+df_raw_verificacion = pd.read_csv('ventas_limpio.csv')
+print(f'Archivo exportado: {df_raw_verificacion.shape[0]} filas x {df_raw_verificacion.shape[1]} columnas')
 ```
 
 ---
@@ -598,10 +598,10 @@ Antes de dar por terminado el análisis, verificá cada punto:
 print('='*50)
 print('REPORTE FINAL DE CALIDAD DEL DATASET')
 print('='*50)
-print(f'Dimensiones: {df.shape[0]} filas x {df.shape[1]} columnas')
-print(f'Duplicados: {df.duplicated().sum()}')
-print(f'Nulos totales: {df.isnull().sum().sum()}')
-print(f'Tipos de datos correctos: {dict(df.dtypes)}')
+print(f'Dimensiones: {df_raw.shape[0]} filas x {df_raw.shape[1]} columnas')
+print(f'Duplicados: {df_raw.duplicated().sum()}')
+print(f'Nulos totales: {df_raw.isnull().sum().sum()}')
+print(f'Tipos de datos correctos: {dict(df_raw.dtypes)}')
 print('='*50)
 ```
 
