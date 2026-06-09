@@ -131,8 +131,6 @@ print(f'Dataset cargado: {df_raw.shape[0]} filas x {df_raw.shape[1]} columnas')
 df_raw.head()
 ```
 
-```python
-```
 ### Opción D - Desde Kaggle
 Descarga el dataset desde Kaggle y lo guarda en caché local.
 Si el dataset se actualiza en Kaggle, kagglehub lo re-descarga automáticamente.
