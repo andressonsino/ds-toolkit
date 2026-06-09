@@ -369,4 +369,6 @@ plt.show()
 | 1 fecha + 1 numérica | Cómo evoluciona en el tiempo | Lineplot |
 | 2 categóricas + 1 numérica | Cruzar dos dimensiones | Heatmap de pivot |
 
+---
+
 *Para variantes avanzadas de cada gráfico → `visualizacion_datos.md`*
