@@ -24,6 +24,19 @@
 
 ---
 
+> **Orden fijo de modelado — nunca cambiar:**
+> 1. Carga del dataset limpio
+> 2. Definir X e y
+> 3. Encoding de categóricas
+> 4. Escalado de numéricas
+> 5. División train/test con stratify
+> 6. Entrenamiento
+> 7. Evaluación con métricas + gráficos
+> 8. Comparar modelos si es necesario
+> 9. Guardar modelo final
+
+---
+
 ## 1. Setup
 
 ```python
@@ -535,19 +548,6 @@ scaler_cargado = joblib.load('scaler.pkl')
 | SVM | Random Forest |
 | KNN | Gradient Boosting |
 | Redes neuronales | — |
-
----
-
-> **Orden fijo de modelado — nunca cambiar:**
-> 1. Carga del dataset limpio
-> 2. Definir X e y
-> 3. Encoding de categóricas
-> 4. Escalado de numéricas
-> 5. División train/test con stratify
-> 6. Entrenamiento
-> 7. Evaluación con métricas + gráficos
-> 8. Comparar modelos si es necesario
-> 9. Guardar modelo final
 
 ---
 
