@@ -3,7 +3,7 @@
 > **Variable:** `df_raw` → `df_clean` (entrada sucia, salida limpia)  
 > **Uso:** Copiá cada bloque en una celda separada del notebook  
 > **Orden:** Seguí las secciones de arriba hacia abajo  
-> **Salida:** archivo `_limpio.csv` listo para el notebook de EDA
+> **Salida:** archivo `_clean.csv` listo para el notebook de EDA
 
 ---
 
