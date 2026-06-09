@@ -21,6 +21,18 @@
 
 ---
 
+> **Orden recomendado en todo EDA:**
+> 1. Setup
+> 2. Carga y diagnóstico estructural ← siempre
+> 3. Histograma por cada numérica ← siempre
+> 4. Boxplot para outliers ← siempre
+> 5. Heatmap de correlación ← siempre si hay 2+ numéricas
+> 6. Countplot por cada categórica ← si hay categóricas
+> 7. Scatterplot o barplot ← según lo que muestre el heatmap
+> 8. Lineplot ← solo si hay fecha
+
+---
+
 ## 1. Setup
 
 ```python
@@ -356,19 +368,5 @@ plt.show()
 | 1 numérica + 1 categórica | Dispersión y outliers por grupo | Boxplot agrupado |
 | 1 fecha + 1 numérica | Cómo evoluciona en el tiempo | Lineplot |
 | 2 categóricas + 1 numérica | Cruzar dos dimensiones | Heatmap de pivot |
-
----
-
-> **Orden recomendado en todo EDA:**
-> 1. Setup
-> 2. Carga y diagnóstico estructural ← siempre
-> 3. Histograma por cada numérica ← siempre
-> 4. Boxplot para outliers ← siempre
-> 5. Heatmap de correlación ← siempre si hay 2+ numéricas
-> 6. Countplot por cada categórica ← si hay categóricas
-> 7. Scatterplot o barplot ← según lo que muestre el heatmap
-> 8. Lineplot ← solo si hay fecha
-
----
 
 *Para variantes avanzadas de cada gráfico → `visualizacion_datos.md`*
