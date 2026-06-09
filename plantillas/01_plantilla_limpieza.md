@@ -112,8 +112,6 @@ print(f"\nDataset listo — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1
 ### Opción B — Desde archivo local
 
 ```python
-import pandas as pd
-
 # ── Configuración ──────────────────────────────────────────
 DATA_PATH = r"data/archivo.csv"  # ← CAMBIAR: ruta al archivo
 SEPARATOR = ","                  # ← CAMBIAR si es otro separador (";", "\t", etc.)
