@@ -24,6 +24,17 @@
 
 ---
 
+> **Orden fijo de limpieza — nunca cambiar:**
+> 1. Diagnóstico inicial ← fotografía del estado original
+> 2. Duplicados ← primero, antes de contar nulos
+> 3. Nulos ← después de sacar duplicados
+> 4. Tipos de datos ← después de nulos (un NaN impide convertir a int)
+> 5. Inconsistencias de texto ← después de tipos
+> 6. Outliers ← cuando el dataset ya está estructuralmente limpio
+> 7. Reset de índice ← siempre al final
+> 8. Verificación y exportación
+
+---
 ## 1. Setup
 
 ```python
@@ -47,29 +58,73 @@ pd.set_option('display.float_format', '{:.2f}'.format)
 
 ## 2. Carga del dataset
 
-### Opción A — Desde Kaggle Hub
+### Opción A — Plantilla con Fallback Automático
 
 ```python
-# Descargar dataset desde Kaggle
-path = kagglehub.dataset_download('USUARIO/NOMBRE-DATASET')  # ← reemplazar
-print(f'Dataset descargado en: {path}')
+import os
+import pandas as pd
 
-# Listar archivos disponibles
-archivos = os.listdir(path)
-print(f'Archivos: {archivos}')
+# ── Configuración ──────────────────────────────────────────
+DATASET_KAGGLE_PROPIO   = "andrssonsinogrugni/nombre-dataset"  # ← CAMBIAR: tu dataset en Kaggle
+DATASET_KAGGLE_EXTERNO  = "mlg-ulb/creditcardf_rawraud"           # ← CAMBIAR: dataset de otro usuario
+DATA_PATH_LOCAL         = r"data/archivo.csv"                 # ← CAMBIAR: ruta local
+# ───────────────────────────────────────────────────────────
 
-# Cargar el CSV
-df_raw = pd.read_csv(os.path.join(path, 'NOMBRE_ARCHIVO.csv'))  # ← reemplazar
+df_raw = None
+
+# ── Prioridad 1: archivo local ya descargado ───────────────
+if os.path.exists(DATA_PATH_LOCAL):
+    df_raw = pd.read_csv(DATA_PATH_LOCAL)
+    print(f"✅ Dataset cargado desde archivo local: {DATA_PATH_LOCAL}")
+
+# ── Prioridad 2: tus propios datasets de Kaggle ────────────
+if df_raw is None:
+    try:
+        import subprocess
+        subprocess.run(["pip", "install", "-q", "kagglehub"], check=True)
+        import kagglehub
+        path = kagglehub.dataset_download(DATASET_KAGGLE_PROPIO)
+        archivos = os.listdir(path)
+        print("Archivos encontrados:", archivos)
+        df_raw = pd.read_csv(f"{path}/{archivos[0]}")
+        print("✅ Dataset cargado desde tus datasets de Kaggle")
+    except Exception as e:
+        print(f"⚠️ No se pudo cargar desde tu Kaggle: {e}")
+
+# ── Prioridad 3: dataset externo de Kaggle ─────────────────
+if df_raw is None:
+    try:
+        import kagglehub
+        path = kagglehub.dataset_download(DATASET_KAGGLE_EXTERNO)
+        archivos = os.listdir(path)
+        print("Archivos encontrados:", archivos)
+        df_raw = pd.read_csv(f"{path}/{archivos[0]}")
+        print("✅ Dataset cargado desde dataset externo de Kaggle")
+    except Exception as e:
+        raise FileNotFoundError(
+            f"No se pudo cargar el dataset desde ninguna fuente.\n"
+            f"Opciones manuales:\n"
+            f"  1. Colocá el archivo en: {DATA_PATH_LOCAL}\n"
+            f"  2. Subí tu dataset a: https://www.kaggle.com/datasets/{DATASET_KAGGLE_PROPIO}\n"
+            f"  3. Descargalo desde: https://www.kaggle.com/datasets/{DATASET_KAGGLE_EXTERNO}\n"
+        )
+
+print(f"\nDataset listo — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
 ```
 
 ### Opción B — Desde archivo local
 
 ```python
-df_raw = pd.read_csv(
-    'NOMBRE_ARCHIVO.csv',          # ← reemplazar
-    sep=',',                       # cambiar a ';' si es europeo
-    encoding='utf-8',              # probar 'latin-1' si falla
-)
+import pandas as pd
+
+# ── Configuración ──────────────────────────────────────────
+DATA_PATH = r"data/archivo.csv"  # ← CAMBIAR: ruta al archivo
+SEPARATOR = ","                  # ← CAMBIAR si es otro separador (";", "\t", etc.)
+ENCODING  = "utf-8"              # ← CAMBIAR si hay problemas de caracteres
+# ───────────────────────────────────────────────────────────
+
+df_raw = pd.read_csv(DATA_PATH, sep=SEPARATOR, encoding=ENCODING)
+print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
 ```
 
 ### Opción C — Desde Google Colab
@@ -92,40 +147,39 @@ df_raw.head()
 **Ejecutar completo antes de tocar cualquier dato. Nunca saltear esta sección.**
 
 ```python
-# Tipos de datos y nulos
+# ─── Primeras y últimas filas ──────────────────────────────────────────────
+print('\n--- Primeras 5 filas ---')
+display(df_raw.head())
+
+print('\n--- Últimas 5 filas ---')
+display(df_raw.tail())
+
+# ─── Dimensiones ───────────────────────────────────────────────────────────
+print(f'Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}')
+
+# ─── Tipos de datos ────────────────────────────────────────────────────────
+print('\n--- Info general ---')
 df_raw.info()
-```
 
-```python
-# Estadísticas descriptivas
-df_raw.describe()
-```
+# ─── Valores nulos por columna ─────────────────────────────────────────────
+print('\n--- Nulos por columna ---')
+# Verificamos si hay algún nulo en toda la tabla
+if df_raw.isnull().sum().sum() == 0:
+    print('✅ Sin valores nulos')
+else:
+    # Sino mostramos tabla filtrada de nulos
+    nulos = pd.DataFrame({
+        'Nulos': df_raw.isnull().sum(),
+        'Porcentaje': (df_raw.isnull().sum() / len(df_raw) * 100).round(2)
+    })
+    display(nulos[nulos['Nulos'] > 0])
 
-```python
-# Nulos por columna con porcentaje
-nulos = pd.DataFrame({
-    'Nulos': df_raw.isnull().sum(),
-    'Porcentaje': (df_raw.isnull().sum() / len(df_raw) * 100).round(2)
-})
-display(nulos.sort_values('Porcentaje', ascending=False))
-```
+# ─── Duplicados ────────────────────────────────────────────────────────────
+print(f'\nFilas duplicadas: {df_raw.duplicated().sum()}')
 
-```python
-# Duplicados
-print(f'Filas duplicadas: {df_raw.duplicated().sum()}')
-```
-
-```python
-# Valores únicos por columna — detecta categóricas vs numéricas
-df_raw.nunique().sort_values()
-```
-
-```python
-# Valores únicos de columnas categóricas — detecta inconsistencias de texto
-columnas_objeto = df_raw.select_dtypes(include='object').columns.tolist()
-for col in columnas_objeto:
-    print(f'\n{col}: {df_raw[col].nunique()} valores únicos')
-    print(df_raw[col].value_counts().head(10))
+# ─── Estadísticas descriptivas ─────────────────────────────────────────────
+print('\n--- Estadísticas descriptivas ---')
+display(df_raw.describe())
 ```
 
 ---
@@ -469,18 +523,6 @@ print(f'Verificación: {verificacion.shape[0]} filas x {verificacion.shape[1]} c
 | Números con `$` o `.` | Limpiar string → `pd.to_numeric()` |
 | Texto con pocos valores únicos | `astype('category')` |
 | Texto con orden lógico | `pd.Categorical(..., ordered=True)` |
-
----
-
-> **Orden fijo de limpieza — nunca cambiar:**
-> 1. Diagnóstico inicial ← fotografía del estado original
-> 2. Duplicados ← primero, antes de contar nulos
-> 3. Nulos ← después de sacar duplicados
-> 4. Tipos de datos ← después de nulos (un NaN impide convertir a int)
-> 5. Inconsistencias de texto ← después de tipos
-> 6. Outliers ← cuando el dataset ya está estructuralmente limpio
-> 7. Reset de índice ← siempre al final
-> 8. Verificación y exportación
 
 ---
 
