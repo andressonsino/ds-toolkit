@@ -61,9 +61,6 @@ pd.set_option('display.float_format', '{:.2f}'.format)
 ### Opción A — Plantilla con Fallback Automático
 
 ```python
-import os
-import pandas as pd
-
 # ── Configuración ──────────────────────────────────────────
 DATASET_KAGGLE_PROPIO   = "andrssonsinogrugni/nombre-dataset"  # ← CAMBIAR: tu dataset en Kaggle
 DATASET_KAGGLE_EXTERNO  = "mlg-ulb/creditcardf_rawraud"           # ← CAMBIAR: dataset de otro usuario
@@ -132,14 +129,75 @@ print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.sha
 ```python
 from google.colab import files
 df_raw = pd.read_csv(list(files.upload().keys())[0])
-```
-
-```python
-# Verificar carga exitosa — siempre después de cargar
 print(f'Dataset cargado: {df_raw.shape[0]} filas x {df_raw.shape[1]} columnas')
 df_raw.head()
 ```
 
+```python
+```
+### Opción D - Desde Kaggle
+Descarga el dataset desde Kaggle y lo guarda en caché local.
+Si el dataset se actualiza en Kaggle, kagglehub lo re-descarga automáticamente.
+
+**Cuándo usarla:** dataset de Kaggle, querés reproducibilidad sin descargar manualmente.
+
+```python
+# ── Configuración ──────────────────────────────────────────
+DATASET_KAGGLE = "mlg-ulb/creditcardf_rawraud"  # ← CAMBIAR: usuario/nombre-dataset
+# ───────────────────────────────────────────────────────────
+
+# Descarga a caché local (no re-descarga si ya está actualizado)
+path = kagglehub.dataset_download(DATASET_KAGGLE)
+
+# Detecta el archivo automáticamente
+archivos = os.listdir(path)
+print("Archivos descargados:", archivos)
+
+# Carga el primer archivo CSV encontrado
+df_raw = pd.read_csv(f"{path}/{archivos[0]}")
+print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
+```
+
+### Opción E - Desde Scikit-learn (datasets built-in)
+**Cuándo usarla:** datasets clásicos como Iris, Wine, Breast Cancer, Digits.
+
+```python
+from sklearn.datasets import load_iris  # ← CAMBIAR: load_wine, load_breast_cancer, etc.
+
+data = load_iris()
+df_raw = pd.DataFrame(data.data, columns=data.feature_names)
+df_raw['target'] = data.target
+
+print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
+print(f"Clases: {data.target_names}")
+```
+
+### Opción F - Desde Keras (imágenes y series)
+**Cuándo usarla:** MNIST, Fashion-MNIST, CIFAR-10, etc.
+```python
+import tensorflow as tf
+
+# ── Configuración ──────────────────────────────────────────
+dataset = tf.keras.datasets.mnist  # ← CAMBIAR: fashion_mnist, cifar10, cifar100, imdb, etc.
+# ───────────────────────────────────────────────────────────
+
+(X_train, y_train), (X_test, y_test) = dataset.load_data()
+
+print(f"✅ Dataset cargado")
+print(f"Train: {X_train.shape} | Test: {X_test.shape}")
+```
+
+### Opción G - URL directa
+**Cuándo usarla:** dataset publicado en una URL pública (UCI, GitHub raw, etc.).
+
+```python
+# ── Configuración ──────────────────────────────────────────
+URL = "https://raw.githubusercontent.com/usuario/repo/main/data.csv"  # ← CAMBIAR
+# ───────────────────────────────────────────────────────────
+
+df_raw = pd.read_csv(URL)
+print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
+```
 ---
 
 ## 3. Diagnóstico inicial
