@@ -36,7 +36,7 @@
 > 8. Analizar y describir cada cluster
 > 9. Visualizar (boxplots, heatmap, PCA)
 > 10. Exportar dataset con clusters
-> 11. 
+
 ---
 
 ## 1. Setup
