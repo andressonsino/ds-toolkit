@@ -25,6 +25,20 @@
 
 ---
 
+> **Orden fijo de clustering — nunca cambiar:**
+> 1. Carga del dataset limpio
+> 2. Seleccionar features relevantes
+> 3. Encoding si hay categóricas
+> 4. Escalado — obligatorio
+> 5. Encontrar k óptimo (codo + silhouette)
+> 6. Entrenar modelo
+> 7. Asignar clusters al DataFrame
+> 8. Analizar y describir cada cluster
+> 9. Visualizar (boxplots, heatmap, PCA)
+> 10. Exportar dataset con clusters
+> 11. 
+---
+
 ## 1. Setup
 
 ```python
@@ -509,20 +523,6 @@ print(f'Dataset exportado: {nombre_salida}')
 | **Silhouette Score** | Cercano a `1.0` | Qué tan separados y compactos son los clusters |
 | **Davies-Bouldin** | Cercano a `0.0` | Similitud entre clusters (menor = mejor separados) |
 | **Calinski-Harabasz** | Cuanto más alto | Ratio entre dispersión inter e intra cluster |
-
----
-
-> **Orden fijo de clustering — nunca cambiar:**
-> 1. Carga del dataset limpio
-> 2. Seleccionar features relevantes
-> 3. Encoding si hay categóricas
-> 4. Escalado — obligatorio
-> 5. Encontrar k óptimo (codo + silhouette)
-> 6. Entrenar modelo
-> 7. Asignar clusters al DataFrame
-> 8. Analizar y describir cada cluster
-> 9. Visualizar (boxplots, heatmap, PCA)
-> 10. Exportar dataset con clusters
 
 ---
 
