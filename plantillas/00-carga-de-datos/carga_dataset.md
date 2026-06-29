@@ -1,8 +1,8 @@
-\## 2. Carga del dataset
+## 2. Carga del dataset
 
 
 
-\### Opción A — Plantilla con Fallback Automático
+### Opción A — Plantilla con Fallback Automático
 
 
 
@@ -59,33 +59,26 @@ print(f"\nDataset listo — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1
 
 
 
-\### Opción B — Desde archivo local
+### Opción B — Desde archivo local
 
 
 
 ```python
 
-\# ── Configuración ──────────────────────────────────────────
-
-DATA\_PATH = r"data/archivo.csv"  # ← CAMBIAR: ruta al archivo
-
-SEPARATOR = ","                  # ← CAMBIAR si es otro separador (";", "\\t", etc.)
-
+# ── Configuración ──────────────────────────────────────────
+DATA_PATH = r"data/archivo.csv"  # ← CAMBIAR: ruta al archivo
+SEPARATOR = ","                  # ← CAMBIAR si es otro separador (";", "\t", etc.)
 ENCODING  = "utf-8"              # ← CAMBIAR si hay problemas de caracteres
+# ───────────────────────────────────────────────────────────
 
-\# ───────────────────────────────────────────────────────────
-
-
-
-df\_raw = pd.read\_csv(DATA\_PATH, sep=SEPARATOR, encoding=ENCODING)
-
-print(f"✅ Dataset cargado — Filas: {df\_raw.shape\[0]} | Columnas: {df\_raw.shape\[1]}")
+df_raw = pd.read_csv(DATA_PATH, sep=SEPARATOR, encoding=ENCODING)
+print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
 
 ```
 
 
 
-\### Opción C — Desde Google Colab
+### Opción C — Desde Google Colab
 
 
 
@@ -93,17 +86,15 @@ print(f"✅ Dataset cargado — Filas: {df\_raw.shape\[0]} | Columnas: {df\_raw.
 
 from google.colab import files
 
-df\_raw = pd.read\_csv(list(files.upload().keys())\[0])
-
-print(f'Dataset cargado: {df\_raw.shape\[0]} filas x {df\_raw.shape\[1]} columnas')
-
-df\_raw.head()
+df_raw = pd.read_csv(list(files.upload().keys())[0])
+print(f'Dataset cargado: {df_raw.shape[0]} filas x {df_raw.shape[1]} columnas')
+df_raw.head()
 
 ```
 
 
 
-\### Opción D - Desde Kaggle
+### Opción D - Desde Kaggle
 
 Descarga el dataset desde Kaggle y lo guarda en caché local.
 
@@ -111,121 +102,89 @@ Si el dataset se actualiza en Kaggle, kagglehub lo re-descarga automáticamente.
 
 
 
-\*\*Cuándo usarla:\*\* dataset de Kaggle, querés reproducibilidad sin descargar manualmente.
+**Cuándo usarla:** dataset de Kaggle, querés reproducibilidad sin descargar manualmente.
 
 
 
 ```python
 
-\# ── Configuración ──────────────────────────────────────────
+# ── Configuración ──────────────────────────────────────────
+DATASET_KAGGLE = "mlg-ulb/creditcardfraud"  # ← CAMBIAR: usuario/nombre-dataset
+# ───────────────────────────────────────────────────────────
 
-DATASET\_KAGGLE = "mlg-ulb/creditcardf\_rawraud"  # ← CAMBIAR: usuario/nombre-dataset
+import kagglehub
+import os
 
-\# ───────────────────────────────────────────────────────────
+# Descarga a caché local (no re-descarga si ya está actualizado)
+path = kagglehub.dataset_download(DATASET_KAGGLE)
 
-
-
-\# Descarga a caché local (no re-descarga si ya está actualizado)
-
-path = kagglehub.dataset\_download(DATASET\_KAGGLE)
-
-
-
-\# Detecta el archivo automáticamente
-
+# Detecta el archivo automáticamente
 archivos = os.listdir(path)
-
 print("Archivos descargados:", archivos)
 
-
-
-\# Carga el primer archivo CSV encontrado
-
-df\_raw = pd.read\_csv(f"{path}/{archivos\[0]}")
-
-print(f"✅ Dataset cargado — Filas: {df\_raw.shape\[0]} | Columnas: {df\_raw.shape\[1]}")
+# Carga el primer archivo CSV encontrado
+df_raw = pd.read_csv(f"{path}/{archivos[0]}")
+print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
 
 ```
 
 
 
-\### Opción E - Desde Scikit-learn (datasets built-in)
+### Opción E - Desde Scikit-learn (datasets built-in)
 
-\*\*Cuándo usarla:\*\* datasets clásicos como Iris, Wine, Breast Cancer, Digits.
+**Cuándo usarla:** datasets clásicos como Iris, Wine, Breast Cancer, Digits.
 
 
 
 ```python
 
-from sklearn.datasets import load\_iris  # ← CAMBIAR: load\_wine, load\_breast\_cancer, etc.
+from sklearn.datasets import load_iris  # ← CAMBIAR: load_wine, load_breast_cancer, etc.
 
+data = load_iris()
+df_raw = pd.DataFrame(data.data, columns=data.feature_names)
+df_raw['target'] = data.target
 
-
-data = load\_iris()
-
-df\_raw = pd.DataFrame(data.data, columns=data.feature\_names)
-
-df\_raw\['target'] = data.target
-
-
-
-print(f"✅ Dataset cargado — Filas: {df\_raw.shape\[0]} | Columnas: {df\_raw.shape\[1]}")
-
-print(f"Clases: {data.target\_names}")
+print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
+print(f"Clases: {data.target_names}")
 
 ```
 
 
 
-\### Opción F - Desde Keras (imágenes y series)
+### Opción F - Desde Keras (imágenes y series)
 
-\*\*Cuándo usarla:\*\* MNIST, Fashion-MNIST, CIFAR-10, etc.
+**Cuándo usarla:** MNIST, Fashion-MNIST, CIFAR-10, etc.
 
 ```python
 
 import tensorflow as tf
 
+# ── Configuración ──────────────────────────────────────────
+dataset = tf.keras.datasets.mnist  # ← CAMBIAR: fashion_mnist, cifar10, cifar100, imdb, etc.
+# ───────────────────────────────────────────────────────────
 
-
-\# ── Configuración ──────────────────────────────────────────
-
-dataset = tf.keras.datasets.mnist  # ← CAMBIAR: fashion\_mnist, cifar10, cifar100, imdb, etc.
-
-\# ───────────────────────────────────────────────────────────
-
-
-
-(X\_train, y\_train), (X\_test, y\_test) = dataset.load\_data()
-
-
+(X_train, y_train), (X_test, y_test) = dataset.load_data()
 
 print(f"✅ Dataset cargado")
-
-print(f"Train: {X\_train.shape} | Test: {X\_test.shape}")
+print(f"Train: {X_train.shape} | Test: {X_test.shape}")
 
 ```
 
 
 
-\### Opción G - URL directa
+### Opción G - URL directa
 
-\*\*Cuándo usarla:\*\* dataset publicado en una URL pública (UCI, GitHub raw, etc.).
+**Cuándo usarla:** dataset publicado en una URL pública (UCI, GitHub raw, etc.).
 
 
 
 ```python
-
-\# ── Configuración ──────────────────────────────────────────
-
+# ── Configuración ──────────────────────────────────────────
 URL = "https://raw.githubusercontent.com/usuario/repo/main/data.csv"  # ← CAMBIAR
+# ───────────────────────────────────────────────────────────
 
-\# ───────────────────────────────────────────────────────────
-
-
-
-df\_raw = pd.read\_csv(URL)
-
-print(f"✅ Dataset cargado — Filas: {df\_raw.shape\[0]} | Columnas: {df\_raw.shape\[1]}")
+df_raw = pd.read_csv(URL)
+print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
 
 ```
 
