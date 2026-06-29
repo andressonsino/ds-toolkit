@@ -8,97 +8,52 @@
 
 ```python
 
-\# ── Configuración ──────────────────────────────────────────
+# ── Configuración ──────────────────────────────────────────
+DATASET_KAGGLE_PROPIO   = "andrssonsinogrugni/nombre-dataset"  # ← CAMBIAR: tu dataset en Kaggle
+DATASET_KAGGLE_EXTERNO  = "mlg-ulb/creditcardfraud"            # ← CAMBIAR: dataset de otro usuario
+DATA_PATH_LOCAL         = r"data/archivo.csv"                  # ← CAMBIAR: ruta local
+# ───────────────────────────────────────────────────────────
 
-DATASET\_KAGGLE\_PROPIO   = "andrssonsinogrugni/nombre-dataset"  # ← CAMBIAR: tu dataset en Kaggle
+df_raw = None
 
-DATASET\_KAGGLE\_EXTERNO  = "mlg-ulb/creditcardf\_rawraud"           # ← CAMBIAR: dataset de otro usuario
+# ── Prioridad 1: archivo local ya descargado ───────────────
+if os.path.exists(DATA_PATH_LOCAL):
+    df_raw = pd.read_csv(DATA_PATH_LOCAL)
+    print(f"✅ Dataset cargado desde archivo local: {DATA_PATH_LOCAL}")
 
-DATA\_PATH\_LOCAL         = r"data/archivo.csv"                 # ← CAMBIAR: ruta local
+# ── Prioridad 2: tus propios datasets de Kaggle ────────────
+if df_raw is None:
+    try:
+        import subprocess
+        subprocess.run(["pip", "install", "-q", "kagglehub"], check=True)
+        import kagglehub
+        path = kagglehub.dataset_download(DATASET_KAGGLE_PROPIO)
+        archivos = os.listdir(path)
+        print("Archivos encontrados:", archivos)
+        df_raw = pd.read_csv(f"{path}/{archivos[0]}")
+        print("✅ Dataset cargado desde tus datasets de Kaggle")
+    except Exception as e:
+        print(f"⚠️ No se pudo cargar desde tu Kaggle: {e}")
 
-\# ───────────────────────────────────────────────────────────
+# ── Prioridad 3: dataset externo de Kaggle ─────────────────
+if df_raw is None:
+    try:
+        import kagglehub
+        path = kagglehub.dataset_download(DATASET_KAGGLE_EXTERNO)
+        archivos = os.listdir(path)
+        print("Archivos encontrados:", archivos)
+        df_raw = pd.read_csv(f"{path}/{archivos[0]}")
+        print("✅ Dataset cargado desde dataset externo de Kaggle")
+    except Exception as e:
+        raise FileNotFoundError(
+            f"No se pudo cargar el dataset desde ninguna fuente.\n"
+            f"Opciones manuales:\n"
+            f"  1. Colocá el archivo en: {DATA_PATH_LOCAL}\n"
+            f"  2. Subí tu dataset a: https://www.kaggle.com/datasets/{DATASET_KAGGLE_PROPIO}\n"
+            f"  3. Descargalo desde: https://www.kaggle.com/datasets/{DATASET_KAGGLE_EXTERNO}\n"
+        )
 
-
-
-df\_raw = None
-
-
-
-\# ── Prioridad 1: archivo local ya descargado ───────────────
-
-if os.path.exists(DATA\_PATH\_LOCAL):
-
-&#x20;   df\_raw = pd.read\_csv(DATA\_PATH\_LOCAL)
-
-&#x20;   print(f"✅ Dataset cargado desde archivo local: {DATA\_PATH\_LOCAL}")
-
-
-
-\# ── Prioridad 2: tus propios datasets de Kaggle ────────────
-
-if df\_raw is None:
-
-&#x20;   try:
-
-&#x20;       import subprocess
-
-&#x20;       subprocess.run(\["pip", "install", "-q", "kagglehub"], check=True)
-
-&#x20;       import kagglehub
-
-&#x20;       path = kagglehub.dataset\_download(DATASET\_KAGGLE\_PROPIO)
-
-&#x20;       archivos = os.listdir(path)
-
-&#x20;       print("Archivos encontrados:", archivos)
-
-&#x20;       df\_raw = pd.read\_csv(f"{path}/{archivos\[0]}")
-
-&#x20;       print("✅ Dataset cargado desde tus datasets de Kaggle")
-
-&#x20;   except Exception as e:
-
-&#x20;       print(f"⚠️ No se pudo cargar desde tu Kaggle: {e}")
-
-
-
-\# ── Prioridad 3: dataset externo de Kaggle ─────────────────
-
-if df\_raw is None:
-
-&#x20;   try:
-
-&#x20;       import kagglehub
-
-&#x20;       path = kagglehub.dataset\_download(DATASET\_KAGGLE\_EXTERNO)
-
-&#x20;       archivos = os.listdir(path)
-
-&#x20;       print("Archivos encontrados:", archivos)
-
-&#x20;       df\_raw = pd.read\_csv(f"{path}/{archivos\[0]}")
-
-&#x20;       print("✅ Dataset cargado desde dataset externo de Kaggle")
-
-&#x20;   except Exception as e:
-
-&#x20;       raise FileNotFoundError(
-
-&#x20;           f"No se pudo cargar el dataset desde ninguna fuente.\\n"
-
-&#x20;           f"Opciones manuales:\\n"
-
-&#x20;           f"  1. Colocá el archivo en: {DATA\_PATH\_LOCAL}\\n"
-
-&#x20;           f"  2. Subí tu dataset a: https://www.kaggle.com/datasets/{DATASET\_KAGGLE\_PROPIO}\\n"
-
-&#x20;           f"  3. Descargalo desde: https://www.kaggle.com/datasets/{DATASET\_KAGGLE\_EXTERNO}\\n"
-
-&#x20;       )
-
-
-
-print(f"\\nDataset listo — Filas: {df\_raw.shape\[0]} | Columnas: {df\_raw.shape\[1]}")
+print(f"\nDataset listo — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
 
 ```
 
