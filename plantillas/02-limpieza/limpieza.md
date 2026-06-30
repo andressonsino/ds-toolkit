@@ -9,18 +9,16 @@
 
 ## Tabla de Contenidos
 
-1. [Setup](#1-setup)
-2. [Carga del dataset](#2-carga-del-dataset)
-3. [Diagnóstico inicial](#3-diagnóstico-inicial)
-4. [Duplicados](#4-duplicados)
-5. [Valores nulos (NaN)](#5-valores-nulos-nan)
-6. [Tipos de datos](#6-tipos-de-datos)
-7. [Inconsistencias en texto](#7-inconsistencias-en-texto)
-8. [Outliers](#8-outliers)
-9. [Reset de índice](#9-reset-de-índice)
-10. [Verificación final](#10-verificación-final)
-11. [Exportar dataset limpio](#11-exportar-dataset-limpio)
-12. [Cuándo usar cada estrategia](#12-cuándo-usar-cada-estrategia)
+1. [Diagnóstico inicial](#1-diagnóstico-inicial)
+2. [Duplicados](#2-duplicados)
+3. [Valores nulos (NaN)](#3-valores-nulos-nan)
+4. [Tipos de datos](#4-tipos-de-datos)
+5. [Inconsistencias en texto](#5-inconsistencias-en-texto)
+6. [Outliers](#6-outliers)
+7. [Reset de índice](#7-reset-de-índice)
+8. [Verificación final](#8-verificación-final)
+9. [Exportar dataset limpio](#9-exportar-dataset-limpio)
+10. [Cuándo usar cada estrategia](#10-cuándo-usar-cada-estrategia)
 
 ---
 
@@ -35,168 +33,8 @@
 > 8. Verificación y exportación
 
 ---
-## 1. Setup
 
-```python
-import kagglehub
-import pandas as pd
-import numpy as np
-import os
-import warnings
-
-# Supresión de warnings
-warnings.filterwarnings('ignore')
-pd.options.mode.chained_assignment = None
-
-# Configuración de visualización del DataFrame
-pd.set_option('display.max_columns', None)   # muestra todas las columnas
-pd.set_option('display.max_rows', 100)
-pd.set_option('display.float_format', '{:.2f}'.format)
-```
-
----
-
-## 2. Carga del dataset
-
-### Opción A — Plantilla con Fallback Automático
-
-```python
-# ── Configuración ──────────────────────────────────────────
-DATASET_KAGGLE_PROPIO   = "andrssonsinogrugni/nombre-dataset"  # ← CAMBIAR: tu dataset en Kaggle
-DATASET_KAGGLE_EXTERNO  = "mlg-ulb/creditcardf_rawraud"           # ← CAMBIAR: dataset de otro usuario
-DATA_PATH_LOCAL         = r"data/archivo.csv"                 # ← CAMBIAR: ruta local
-# ───────────────────────────────────────────────────────────
-
-df_raw = None
-
-# ── Prioridad 1: archivo local ya descargado ───────────────
-if os.path.exists(DATA_PATH_LOCAL):
-    df_raw = pd.read_csv(DATA_PATH_LOCAL)
-    print(f"✅ Dataset cargado desde archivo local: {DATA_PATH_LOCAL}")
-
-# ── Prioridad 2: tus propios datasets de Kaggle ────────────
-if df_raw is None:
-    try:
-        import subprocess
-        subprocess.run(["pip", "install", "-q", "kagglehub"], check=True)
-        import kagglehub
-        path = kagglehub.dataset_download(DATASET_KAGGLE_PROPIO)
-        archivos = os.listdir(path)
-        print("Archivos encontrados:", archivos)
-        df_raw = pd.read_csv(f"{path}/{archivos[0]}")
-        print("✅ Dataset cargado desde tus datasets de Kaggle")
-    except Exception as e:
-        print(f"⚠️ No se pudo cargar desde tu Kaggle: {e}")
-
-# ── Prioridad 3: dataset externo de Kaggle ─────────────────
-if df_raw is None:
-    try:
-        import kagglehub
-        path = kagglehub.dataset_download(DATASET_KAGGLE_EXTERNO)
-        archivos = os.listdir(path)
-        print("Archivos encontrados:", archivos)
-        df_raw = pd.read_csv(f"{path}/{archivos[0]}")
-        print("✅ Dataset cargado desde dataset externo de Kaggle")
-    except Exception as e:
-        raise FileNotFoundError(
-            f"No se pudo cargar el dataset desde ninguna fuente.\n"
-            f"Opciones manuales:\n"
-            f"  1. Colocá el archivo en: {DATA_PATH_LOCAL}\n"
-            f"  2. Subí tu dataset a: https://www.kaggle.com/datasets/{DATASET_KAGGLE_PROPIO}\n"
-            f"  3. Descargalo desde: https://www.kaggle.com/datasets/{DATASET_KAGGLE_EXTERNO}\n"
-        )
-
-print(f"\nDataset listo — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
-```
-
-### Opción B — Desde archivo local
-
-```python
-# ── Configuración ──────────────────────────────────────────
-DATA_PATH = r"data/archivo.csv"  # ← CAMBIAR: ruta al archivo
-SEPARATOR = ","                  # ← CAMBIAR si es otro separador (";", "\t", etc.)
-ENCODING  = "utf-8"              # ← CAMBIAR si hay problemas de caracteres
-# ───────────────────────────────────────────────────────────
-
-df_raw = pd.read_csv(DATA_PATH, sep=SEPARATOR, encoding=ENCODING)
-print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
-```
-
-### Opción C — Desde Google Colab
-
-```python
-from google.colab import files
-df_raw = pd.read_csv(list(files.upload().keys())[0])
-print(f'Dataset cargado: {df_raw.shape[0]} filas x {df_raw.shape[1]} columnas')
-df_raw.head()
-```
-
-### Opción D - Desde Kaggle
-Descarga el dataset desde Kaggle y lo guarda en caché local.
-Si el dataset se actualiza en Kaggle, kagglehub lo re-descarga automáticamente.
-
-**Cuándo usarla:** dataset de Kaggle, querés reproducibilidad sin descargar manualmente.
-
-```python
-# ── Configuración ──────────────────────────────────────────
-DATASET_KAGGLE = "mlg-ulb/creditcardf_rawraud"  # ← CAMBIAR: usuario/nombre-dataset
-# ───────────────────────────────────────────────────────────
-
-# Descarga a caché local (no re-descarga si ya está actualizado)
-path = kagglehub.dataset_download(DATASET_KAGGLE)
-
-# Detecta el archivo automáticamente
-archivos = os.listdir(path)
-print("Archivos descargados:", archivos)
-
-# Carga el primer archivo CSV encontrado
-df_raw = pd.read_csv(f"{path}/{archivos[0]}")
-print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
-```
-
-### Opción E - Desde Scikit-learn (datasets built-in)
-**Cuándo usarla:** datasets clásicos como Iris, Wine, Breast Cancer, Digits.
-
-```python
-from sklearn.datasets import load_iris  # ← CAMBIAR: load_wine, load_breast_cancer, etc.
-
-data = load_iris()
-df_raw = pd.DataFrame(data.data, columns=data.feature_names)
-df_raw['target'] = data.target
-
-print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
-print(f"Clases: {data.target_names}")
-```
-
-### Opción F - Desde Keras (imágenes y series)
-**Cuándo usarla:** MNIST, Fashion-MNIST, CIFAR-10, etc.
-```python
-import tensorflow as tf
-
-# ── Configuración ──────────────────────────────────────────
-dataset = tf.keras.datasets.mnist  # ← CAMBIAR: fashion_mnist, cifar10, cifar100, imdb, etc.
-# ───────────────────────────────────────────────────────────
-
-(X_train, y_train), (X_test, y_test) = dataset.load_data()
-
-print(f"✅ Dataset cargado")
-print(f"Train: {X_train.shape} | Test: {X_test.shape}")
-```
-
-### Opción G - URL directa
-**Cuándo usarla:** dataset publicado en una URL pública (UCI, GitHub raw, etc.).
-
-```python
-# ── Configuración ──────────────────────────────────────────
-URL = "https://raw.githubusercontent.com/usuario/repo/main/data.csv"  # ← CAMBIAR
-# ───────────────────────────────────────────────────────────
-
-df_raw = pd.read_csv(URL)
-print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
-```
----
-
-## 3. Diagnóstico inicial
+## 1. Diagnóstico inicial
 
 **Ejecutar completo antes de tocar cualquier dato. Nunca saltear esta sección.**
 
@@ -238,7 +76,7 @@ display(df_raw.describe())
 
 ---
 
-## 4. Duplicados
+## 2. Duplicados
 
 **Hacer siempre. Antes de cualquier otra limpieza.**
 
@@ -270,7 +108,7 @@ print(f'Filas restantes: {df_raw.shape[0]}')
 
 ---
 
-## 5. Valores nulos (NaN)
+## 3. Valores nulos (NaN)
 
 **La estrategia depende del porcentaje de nulos y del tipo de columna.**
 
@@ -334,7 +172,7 @@ print(df_raw.isnull().sum())
 
 ---
 
-## 6. Tipos de datos
+## 4. Tipos de datos
 
 **Hacer después de limpiar nulos. Un nulo en una columna impide convertir a int.**
 
@@ -389,7 +227,7 @@ print(df_raw.dtypes)
 
 ---
 
-## 7. Inconsistencias en texto
+## 5. Inconsistencias en texto
 
 **Hacer en columnas categóricas antes de análisis o agrupaciones.**
 
@@ -419,7 +257,7 @@ print(df_raw['COLUMNA'].value_counts())                                 # ← re
 
 ---
 
-## 8. Outliers
+## 6. Outliers
 
 **Detectar siempre. Tratar según contexto de negocio.**
 
@@ -472,7 +310,7 @@ df_raw['COLUMNA'] = df_raw['COLUMNA'].clip(                             # ← re
 
 ---
 
-## 9. Reset de índice
+## 7. Reset de índice
 
 **Hacer siempre al final, después de todas las eliminaciones.**
 
@@ -492,7 +330,7 @@ print(f'Filas finales: {df_raw.shape[0]}')
 
 ---
 
-## 10. Verificación final
+## 8. Verificación final
 
 **Ejecutar completo antes de exportar. Confirmar que el dataset está limpio.**
 
@@ -519,7 +357,7 @@ df_raw.head(10)
 
 ---
 
-## 11. Exportar dataset limpio
+## 9. Exportar dataset limpio
 
 **Último paso. El archivo exportado es la entrada del notebook de EDA.**
 
@@ -548,7 +386,7 @@ print(f'Verificación: {verificacion.shape[0]} filas x {verificacion.shape[1]} c
 
 ---
 
-## 12. Cuándo usar cada estrategia
+## 10. Cuándo usar cada estrategia
 
 ### Nulos
 
