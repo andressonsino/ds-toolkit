@@ -304,16 +304,24 @@ print(df_raw['COLUMNA'].value_counts())                                 # ← re
 **Hacer en la sección 5, después de "Espacios extra". Síntoma: letras como `ñ`, `é`, `á` aparecen como `�`, `Ã±`, o se pierden directamente (`'Coruaa'` en vez de `'Coruña'`).**
 
 ```python
-# ── Detectar columnas con encoding sospechoso ────────────────────────────
+# ── Detectar encoding sospechoso en UNA columna ───────────────────────────
 import re
 
 def detectar_encoding_roto(df, columna):
-    patron = re.compile(r'[ï¿½�]|[A-Za-z]{2}aa[A-Za-z]?\b')  # símbolos rotos + patrón "aa" sospechoso
+    patron = re.compile(r'[ï¿½�]|[A-Za-z]{2}aa[A-Za-z]?\b')
     sospechosos = df[df[columna].astype(str).str.contains(patron, na=False, regex=True)]
-    print(f'{columna}: {len(sospechosos)} valores con encoding sospechoso')
     return sospechosos
+```
 
-detectar_encoding_roto(df_raw, 'COLUMNA')                               # ← reemplazar
+```python
+# ── Recorrer TODAS las columnas de texto (no adivinar a mano) ────────────
+columnas_texto = df_raw.select_dtypes(include='object').columns
+
+for col in columnas_texto:
+    resultado = detectar_encoding_roto(df_raw, col)
+    if len(resultado) > 0:
+        print(f'⚠️  {col}: {len(resultado)} valores sospechosos')
+        display(resultado[[col]].drop_duplicates())
 ```
 
 ```python
@@ -325,7 +333,7 @@ df_raw = pd.read_csv('archivo.csv', encoding='latin-1')                 # ← re
 
 ```python
 # ── Opción B: Reemplazo manual puntual ────────────────────────────────────
-# Cuándo: son pocos valores y ya identificaste cuáles
+# Cuándo: son pocos valores y ya identificaste cuáles con el loop anterior
 reemplazos_encoding = {
     'Coruaa': 'Coruña',                                                  # ← reemplazar
     'Troph�e des Champions': 'Trophée des Champions',
@@ -334,10 +342,12 @@ df_raw['COLUMNA'] = df_raw['COLUMNA'].replace(reemplazos_encoding)       # ← r
 ```
 
 ```python
-# Verificar que no quedan residuos
-detectar_encoding_roto(df_raw, 'COLUMNA')                                # ← reemplazar
+# Verificar que no quedan residuos — repetir el loop completo
+for col in columnas_texto:
+    resultado = detectar_encoding_roto(df_raw, col)
+    if len(resultado) > 0:
+        print(f'⚠️  {col}: todavía quedan {len(resultado)} valores')
 ```
-
 ---
 
 ## 5.2 Caracteres invisibles (tabs, saltos de línea ocultos)
