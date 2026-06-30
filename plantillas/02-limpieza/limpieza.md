@@ -224,7 +224,50 @@ df_raw['COLUMNA'] = pd.Categorical(
 # Verificar tipos después de convertir
 print(df_raw.dtypes)
 ```
+---
 
+## 4.1 Normalizar fechas con formato mixto (previo a `pd.to_datetime`)
+
+**Hacer antes del bloque "Fechas" de la sección 4. Síntoma: la misma columna mezcla formatos (`'1/15/06'`, `'11-02/05'`, `'02-01/06'`) y `pd.to_datetime()` falla o produce fechas incorrectas.**
+
+```python
+# ── Diagnóstico: ver todos los patrones de formato presentes ─────────────
+import re
+
+def detectar_patrones_fecha(df, columna):
+    patrones = df[columna].astype(str).apply(
+        lambda x: re.sub(r'\d+', '#', x)  # reemplaza números por # para ver el patrón
+    )
+    print(patrones.value_counts())
+
+detectar_patrones_fecha(df_raw, 'COLUMNA_FECHA')                         # ← reemplazar
+```
+
+```python
+# ── Probar conversión con múltiples formatos candidatos ───────────────────
+formatos_candidatos = ['%m/%d/%y', '%d-%m/%y', '%m-%d/%y']               # ← ajustar según diagnóstico
+
+def parsear_fecha_multiformato(valor, formatos):
+    for fmt in formatos:
+        try:
+            return pd.to_datetime(valor, format=fmt)
+        except (ValueError, TypeError):
+            continue
+    return pd.NaT  # si ningún formato funcionó
+
+df_raw['COLUMNA_FECHA'] = df_raw['COLUMNA_FECHA'].apply(
+    lambda x: parsear_fecha_multiformato(x, formatos_candidatos)
+)
+```
+
+```python
+# Verificar cuántas fechas no se pudieron parsear
+no_parseadas = df_raw['COLUMNA_FECHA'].isnull().sum()                    # ← reemplazar
+print(f'Fechas sin parsear: {no_parseadas} ({no_parseadas/len(df_raw)*100:.1f}%)')
+display(df_raw[df_raw['COLUMNA_FECHA'].isnull()])
+```
+
+> Si quedan muchas sin parsear, revisar manualmente esos casos — puede haber un tercer formato no contemplado.
 ---
 
 ## 5. Inconsistencias en texto
@@ -254,7 +297,70 @@ df_raw['COLUMNA'] = df_raw['COLUMNA'].replace(reemplazos)               # ← re
 # ── Verificar resultado ──────────────────────────────────────────────────
 print(df_raw['COLUMNA'].value_counts())                                 # ← reemplazar
 ```
+---
 
+## 5.1 Encoding roto (mojibake)
+
+**Hacer en la sección 5, después de "Espacios extra". Síntoma: letras como `ñ`, `é`, `á` aparecen como `�`, `Ã±`, o se pierden directamente (`'Coruaa'` en vez de `'Coruña'`).**
+
+```python
+# ── Detectar columnas con encoding sospechoso ────────────────────────────
+import re
+
+def detectar_encoding_roto(df, columna):
+    patron = re.compile(r'[ï¿½�]|[A-Za-z]{2}aa[A-Za-z]?\b')  # símbolos rotos + patrón "aa" sospechoso
+    sospechosos = df[df[columna].astype(str).str.contains(patron, na=False, regex=True)]
+    print(f'{columna}: {len(sospechosos)} valores con encoding sospechoso')
+    return sospechosos
+
+detectar_encoding_roto(df_raw, 'COLUMNA')                               # ← reemplazar
+```
+
+```python
+# ── Opción A: Re-leer el CSV con el encoding correcto ────────────────────
+# Cuándo: el archivo completo está mal — la solución de raíz
+df_raw = pd.read_csv('archivo.csv', encoding='latin-1')                 # ← reemplazar
+# Probar también: 'utf-8', 'cp1252', 'iso-8859-1'
+```
+
+```python
+# ── Opción B: Reemplazo manual puntual ────────────────────────────────────
+# Cuándo: son pocos valores y ya identificaste cuáles
+reemplazos_encoding = {
+    'Coruaa': 'Coruña',                                                  # ← reemplazar
+    'Troph�e des Champions': 'Trophée des Champions',
+}
+df_raw['COLUMNA'] = df_raw['COLUMNA'].replace(reemplazos_encoding)       # ← reemplazar
+```
+
+```python
+# Verificar que no quedan residuos
+detectar_encoding_roto(df_raw, 'COLUMNA')                                # ← reemplazar
+```
+
+---
+
+## 5.2 Caracteres invisibles (tabs, saltos de línea ocultos)
+
+**Hacer junto con "Espacios extra". `str.strip()` no siempre los detecta — usar regex para limpiar cualquier whitespace no estándar.**
+
+```python
+# ── Detectar valores con solo caracteres invisibles ──────────────────────
+sospechosos = df_raw[df_raw['COLUMNA'].astype(str).str.fullmatch(r'\s+')]  # ← reemplazar
+print(f'Valores que son solo espacios/tabs: {len(sospechosos)}')
+display(sospechosos)
+```
+
+```python
+# ── Limpiar todo whitespace no estándar (tabs, \n, espacios dobles) ──────
+df_raw['COLUMNA'] = (
+    df_raw['COLUMNA']
+    .astype(str)
+    .str.replace(r'\s+', ' ', regex=True)   # colapsa tabs/saltos a un espacio
+    .str.strip()
+    .replace('', np.nan)                     # si quedó vacío, convertir a NaN
+)
+```
 ---
 
 ## 6. Outliers
