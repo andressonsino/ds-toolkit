@@ -196,7 +196,6 @@ print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.sha
 
 ```python
 from google.colab import drive
-import os
 
 # Montar Google Drive (te va a pedir autorización la primera vez)
 drive.mount('/content/drive')
