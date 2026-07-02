@@ -188,3 +188,25 @@ print(f"✅ Dataset cargado — Filas: {df_raw.shape[0]} | Columnas: {df_raw.sha
 
 ```
 
+
+
+### Opción H — Desde Google Drive
+
+**Cuándo usarla:** el archivo está guardado en tu Google Drive personal (ideal para trabajar en Colab con datasets propios sin subirlos a Kaggle).
+
+```python
+from google.colab import drive
+import os
+
+# Montar Google Drive (te va a pedir autorización la primera vez)
+drive.mount('/content/drive')
+
+# ── Configuración ──────────────────────────────────────────
+DRIVE_PATH = "MyDrive/data/archivo.csv"  # ← CAMBIAR: ruta dentro de tu Drive
+# ───────────────────────────────────────────────────────────
+
+ruta_completa = f"/content/drive/{DRIVE_PATH}"
+
+df_raw = pd.read_csv(ruta_completa)
+print(f"✅ Dataset cargado desde Google Drive — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
+```
