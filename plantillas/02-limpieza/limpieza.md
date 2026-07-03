@@ -372,6 +372,73 @@ df_raw['COLUMNA'] = (
 )
 ```
 ---
+## 5.3 Separar columnas combinadas
+
+**Hacer cuando una columna contiene dos datos distintos fusionados en el mismo campo.**
+**Síntoma: `'Sebastián Meza Portero'` en vez de nombre y posición por separado.**
+
+### Caso A — Separar texto con patrón conocido al final del string (nombre + posición)
+
+```python
+# ── Definir los valores posibles de la parte a extraer ───────────────────
+# Listar de más largo a más corto para que el regex priorice el match completo
+valores_a_extraer = [
+    'Mediocentro ofensivo',     # ← reemplazar con los valores del dataset
+    'Lateral izquierdo',
+    'Lateral derecho',
+    'Interior derecho',
+    'Interior izquierdo',
+    'Extremo izquierdo',
+    'Extremo derecho',
+    'Delantero centro',
+    'Defensa central',
+    'Mediocentro',
+    'Portero',
+    'Pivote',
+]
+
+patron = '(' + '|'.join(valores_a_extraer) + ')'
+
+# ── Extraer en columna nueva ──────────────────────────────────────────────
+df_raw['posicion'] = df_raw['Jugadores'].str.extract(patron)             # ← reemplazar nombre columna origen
+
+# ── Limpiar la columna original dejando solo el nombre ───────────────────
+df_raw['jugador'] = df_raw['Jugadores'].str.replace(patron, '', regex=True).str.strip()
+
+# ── Verificar que no quedaron NaN en posicion ────────────────────────────
+print(f"NaN en posicion: {df_raw['posicion'].isnull().sum()}")
+display(df_raw[['jugador', 'posicion']].head(10))
+
+# ── Eliminar columna original una vez verificado ─────────────────────────
+df_raw = df_raw.drop(columns=['Jugadores'])                              # ← reemplazar
+```
+
+### Caso B — Separar texto con delimitador fijo (fecha + edad entre paréntesis)
+
+```python
+# ── Separar en dos columnas usando regex con grupos ──────────────────────
+# Ejemplo: '14/03/2000 (26)' → fecha_nacimiento='14/03/2000', edad=26
+df_raw['fecha_nacimiento'] = df_raw['F. Nacim./Edad'].str.extract(r'(\d{2}/\d{2}/\d{4})')   # ← reemplazar
+df_raw['edad'] = df_raw['F. Nacim./Edad'].str.extract(r'\((\d+)\)').astype(float)            # ← reemplazar
+
+# ── Convertir fecha a tipo datetime ──────────────────────────────────────
+df_raw['fecha_nacimiento'] = pd.to_datetime(df_raw['fecha_nacimiento'],
+                                             format='%d/%m/%Y',
+                                             errors='coerce')
+
+# ── Verificar ────────────────────────────────────────────────────────────
+print(f"NaN en fecha_nacimiento: {df_raw['fecha_nacimiento'].isnull().sum()}")
+print(f"NaN en edad: {df_raw['edad'].isnull().sum()}")
+display(df_raw[['F. Nacim./Edad', 'fecha_nacimiento', 'edad']].head(5))
+
+# ── Eliminar columna original una vez verificado ─────────────────────────
+df_raw = df_raw.drop(columns=['F. Nacim./Edad'])                         # ← reemplazar
+```
+
+> **Regla:** siempre verificar NaN en las columnas nuevas antes de eliminar la original.
+> Si quedan NaN inesperados, hay un patrón no contemplado en el regex — revisar con `df_raw[df_raw['columna_nueva'].isnull()]`
+
+---
 
 ## 6. Outliers
 
