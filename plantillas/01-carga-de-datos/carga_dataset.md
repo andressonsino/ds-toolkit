@@ -11,7 +11,7 @@
 # ── Configuración ──────────────────────────────────────────
 DATASET_KAGGLE_PROPIO   = "andrssonsinogrugni/nombre-dataset"  # ← CAMBIAR: tu dataset en Kaggle
 DATASET_KAGGLE_EXTERNO  = "mlg-ulb/creditcardfraud"            # ← CAMBIAR: dataset de otro usuario
-DATA_PATH_LOCAL         = r"data/archivo.csv"                  # ← CAMBIAR: ruta local
+DATA_PATH_LOCAL         = r"data/raw/archivo.csv"                  # ← CAMBIAR: ruta local
 # ───────────────────────────────────────────────────────────
 
 df_raw = None
@@ -66,7 +66,7 @@ print(f"\nDataset listo — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1
 ```python
 
 # ── Configuración ──────────────────────────────────────────
-DATA_PATH = r"data/archivo.csv"  # ← CAMBIAR: ruta al archivo
+DATA_PATH = r"data/raw/archivo.csv"  # ← CAMBIAR: ruta al archivo
 SEPARATOR = ","                  # ← CAMBIAR si es otro separador (";", "\t", etc.)
 ENCODING  = "utf-8"              # ← CAMBIAR si hay problemas de caracteres
 # ───────────────────────────────────────────────────────────
