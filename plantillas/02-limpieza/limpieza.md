@@ -193,8 +193,12 @@ df_raw['COLUMNA_FECHA'] = pd.to_datetime(df_raw['COLUMNA_FECHA'],
 
 ```python
 # ── Numéricos ────────────────────────────────────────────────────────────
+# columnas con formato texto ($, puntos, comas) o cuando sabés que hay valores problemáticos
 df_raw['COLUMNA'] = pd.to_numeric(df_raw['COLUMNA'], errors='coerce')  # ← reemplazar
+
+# columnas ya limpias, conversión directa como verificación implícita de que está todo bien
 df_raw['COLUMNA'] = df_raw['COLUMNA'].astype(int)
+
 df_raw['COLUMNA'] = df_raw['COLUMNA'].astype(float)
 ```
 
