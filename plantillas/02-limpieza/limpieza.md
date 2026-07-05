@@ -155,8 +155,13 @@ df_raw['COLUMNA_NUM'] = df_raw['COLUMNA_NUM'].fillna(0)       # ← reemplazar
 
 ```python
 # ── Eliminar filas con nulos ───────────────────────────────────────────────
-# Cuándo: menos del 5% de nulos en una columna crítica
-df_raw = df_raw.dropna(subset=['COLUMNA_CRITICA'])            # ← reemplazar
+# Cuándo: menos del 5% de nulos en una columna críticaa
+filas_antes = len(df_raw)
+
+df_raw = df_raw.dropna(subset=['COLUMNA'])                               # ← reemplazar
+
+print(f'Filas eliminadas: {filas_antes - len(df_raw)}')
+print(f'Filas restantes:  {len(df_raw)}')
 ```
 
 ```python
