@@ -567,7 +567,7 @@ df_raw.head(10)
 df_clean = df_raw.copy()
 
 # Exportar
-nombre_salida = 'NOMBRE_DATASET_limpio.csv'                             # ← reemplazar
+nombre_salida = 'data/clean/NOMBRE_DATASET_clean.csv'    # ← reemplazar
 df_clean.to_csv(nombre_salida, index=False, encoding='utf-8')
 print(f'Dataset exportado: {nombre_salida}')
 print(f'Filas: {df_clean.shape[0]} | Columnas: {df_clean.shape[1]}')
