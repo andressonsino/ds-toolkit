@@ -219,6 +219,7 @@ df_raw['COLUMNA'] = (
     .str.replace('mill.', 'e6', regex=False) # 'e6' = x1.000.000 (notación científica)
     .str.replace('mil', 'e3', regex=False)   # 'e3' = x1.000
     .str.replace(',', '.', regex=False)      # separador decimal
+    .str.replace(' ', '', regex=False)       # eliminar espacios entre número y magnitud
     .str.strip()
 )
 df_raw['COLUMNA'] = pd.to_numeric(df_raw['COLUMNA'], errors='coerce')
