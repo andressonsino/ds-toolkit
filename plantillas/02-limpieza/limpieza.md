@@ -209,6 +209,19 @@ df_raw['COLUMNA'] = df_raw['COLUMNA'].str.replace('$', '', regex=False)  # ← r
 df_raw['COLUMNA'] = df_raw['COLUMNA'].str.replace('.', '', regex=False)
 df_raw['COLUMNA'] = df_raw['COLUMNA'].str.replace(',', '.', regex=False)
 df_raw['COLUMNA'] = pd.to_numeric(df_raw['COLUMNA'], errors='coerce')
+
+# ── Numérico con abreviaciones de magnitud (mil, mill.) ──────────────────
+# Cuándo: columna tiene '450 mil €' o '2,50 mill. €' en lugar de 450000 o 2500000
+df_raw['COLUMNA'] = df_raw['COLUMNA'].replace('-', np.nan)               # ← reemplazar
+df_raw['COLUMNA'] = (
+    df_raw['COLUMNA']
+    .str.replace('€', '', regex=False)       # quitar símbolo de moneda
+    .str.replace('mill.', 'e6', regex=False) # 'e6' = x1.000.000 (notación científica)
+    .str.replace('mil', 'e3', regex=False)   # 'e3' = x1.000
+    .str.replace(',', '.', regex=False)      # separador decimal
+    .str.strip()
+)
+df_raw['COLUMNA'] = pd.to_numeric(df_raw['COLUMNA'], errors='coerce')
 ```
 
 ```python
