@@ -9,7 +9,7 @@
 ## Tabla de Contenidos
 
 1. [Setup](#1-setup)
-2. [Carga del dataset limpio](#2-carga-del-dataset-limpio)
+2. [Enriquecimiento manual de columnas](#2-enriquecimiento-manual-de-columnas)
 3. [Diagnóstico estructural](#3-diagnóstico-estructural)
 4. [Variables numéricas — distribución](#4-variables-numéricas--distribución)
 5. [Variables numéricas — outliers](#5-variables-numéricas--outliers)
@@ -57,13 +57,46 @@ plt.rcParams['axes.labelsize'] = 13
 
 ---
 
-## 2. Carga del dataset limpio
+## 2. Enriquecimiento manual de columnas
+
+**Cuándo:** una columna es relevante para el análisis pero tiene nulos que podés completar
+con investigación externa (Transfermarkt, Wikipedia, etc.).
+**Por qué acá y no en limpieza:** es una decisión analítica, no una corrección de datos sucios.
 
 ```python
-df_clean = pd.read_csv('nombre_archivo_limpio.csv')  # ← cambiar nombre
-print(f'Dataset cargado: {df_clean.shape[0]} filas x {df_clean.shape[1]} columnas')
+# ── Completar valores manualmente ────────────────────────────────────────
+# Usar códigos estándar según el tipo de dato:
+# Nacionalidades → ISO 3166-1 alpha-2 (AR, BR, UY, EC, etc.)
+# Documentar la fuente de consulta en el comentario
+
+valores_manuales = {
+    'NOMBRE_1': 'VALOR',    # ← reemplazar
+    'NOMBRE_2': 'VALOR',
+}
+
+# ── Columna de búsqueda y columna a completar ─────────────────────────────
+COL_BUSQUEDA = 'COLUMNA_NOMBRE'    # ← reemplazar: columna donde buscar el nombre
+COL_COMPLETAR = 'COLUMNA_NULOS'   # ← reemplazar: columna a completar
+
+for nombre, valor in valores_manuales.items():
+    mask = df_clean[COL_BUSQUEDA].str.contains(nombre, na=False)
+    if mask.sum() == 0:
+        print(f'⚠️  No se encontró: {nombre}')
+    else:
+        df_clean.loc[mask, COL_COMPLETAR] = valor
+
+# ── Verificar cobertura ───────────────────────────────────────────────────
+total = len(df_clean)
+completados = df_clean[COL_COMPLETAR].notna().sum()
+print(f'Cobertura: {completados}/{total} ({completados/total*100:.1f}%)')
+display(df_clean[[COL_BUSQUEDA, COL_COMPLETAR]])
 ```
 
+> **Fuente de consulta:** documentar siempre de dónde sacaste los valores
+> ```python
+> # Fuente: Transfermarkt — https://www.transfermarkt.com.ar/...
+> # Fecha de consulta: DD/MM/AAAA
+> ```
 ---
 
 ## 3. Diagnóstico estructural
