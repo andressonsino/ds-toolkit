@@ -171,8 +171,15 @@ for col in columnas_numericas:
 
 ```python
 # Boxplot de todas las variables numéricas
-plt.figure(figsize=(14, 6))
-df_clean[columnas_numericas].boxplot()
+plt.figure(figsize=(14, 10))
+df_clean[columnas_numericas].boxplot(
+    grid=False,                
+    patch_artist=True,
+    boxprops=dict(facecolor='skyblue', color='navy'),   
+    whiskerprops=dict(color='navy'),
+    capprops=dict(color='navy'),
+    medianprops=dict(color='darkred', linewidth=2) 
+)         
 plt.title('Detección de outliers — Variables numéricas')
 plt.xticks(rotation=45)
 plt.tight_layout()
@@ -225,10 +232,11 @@ sns.heatmap(
     cmap='coolwarm',
     center=0,
     linewidths=0.5,
-    square=True
+    square=True,
 )
 plt.title('Correlación entre variables numéricas')
 plt.tight_layout()
+plt.grid(False)
 plt.show()
 ```
 
