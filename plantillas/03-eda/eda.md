@@ -153,6 +153,7 @@ for col in columnas_numericas:
     plt.title(f'Distribución de {col}')
     plt.xlabel(col)
     plt.tight_layout()
+    plt.grid(False)
     plt.show()
 ```
 
