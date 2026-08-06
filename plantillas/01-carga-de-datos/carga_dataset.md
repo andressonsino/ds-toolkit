@@ -66,7 +66,7 @@ print(f"\nDataset listo — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1
 ```python
 
 # ── Configuración ──────────────────────────────────────────
-DATA_PATH = r"data/raw/archivo.csv"  # ← CAMBIAR: ruta al archivo
+DATA_PATH = r"data/raw/archivo.csv"  # ← CAMBIAR: ruta al archivo usar ../ al principio si debo ubicarme en una carpeta anterior
 SEPARATOR = ","                  # ← CAMBIAR si es otro separador (";", "\t", etc.)
 ENCODING  = "utf-8"              # ← CAMBIAR si hay problemas de caracteres
 # ───────────────────────────────────────────────────────────
