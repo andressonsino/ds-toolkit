@@ -444,6 +444,10 @@ df_raw = df_raw.drop(columns=['Jugadores'])                              # ← r
 df_raw['fecha_nacimiento'] = df_raw['F. Nacim./Edad'].str.extract(r'(\d{2}/\d{2}/\d{4})')   # ← reemplazar
 df_raw['edad'] = df_raw['F. Nacim./Edad'].str.extract(r'\((\d+)\)').astype(float)            # ← reemplazar
 
+# Para la edad de Fbref (separar años y días)
+df_raw['edad_años'] = df_raw['Age'].str.extract(r'^(\d+)')          # Extrae los números antes del guion
+df_raw['edad_dias'] = df_raw['Age'].str.extract(r'-(\d+)').astype(float)  # Extrae los números después del guion
+
 # ── Convertir fecha a tipo datetime ──────────────────────────────────────
 df_raw['fecha_nacimiento'] = pd.to_datetime(df_raw['fecha_nacimiento'],
                                              format='%d/%m/%Y',
