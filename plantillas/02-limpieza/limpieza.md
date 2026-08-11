@@ -482,6 +482,15 @@ def detectar_outliers(df, columna):
     return lim_inf, lim_sup
 
 lim_inf, lim_sup = detectar_outliers(df_raw, 'COLUMNA_NUMERICA')       # ← reemplazar
+
+# Bucle for para utilizar esta funcion en cada columna
+# Filtramos para agarrar solo las columnas que tienen números (ignoramos textos/nombres)
+columnas_numericas = df_raw.select_dtypes(include=['number']).columns
+
+# Hacemos que Python pase la función por cada una de esas columnas automáticamente
+for col in columnas_numericas:
+    detectar_outliers(df_raw, col)
+    print("-" * 40) # Imprime una línea separadora para que se lea mejor
 ```
 
 ```python
