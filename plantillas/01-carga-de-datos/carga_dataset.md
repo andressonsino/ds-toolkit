@@ -201,11 +201,9 @@ from google.colab import drive
 drive.mount('/content/drive')
 
 # ── Configuración ──────────────────────────────────────────
-DRIVE_PATH = "MyDrive/data/archivo.csv"  # ← CAMBIAR: ruta dentro de tu Drive
+DRIVE_PATH = "/content/drive/MyDrive/data/archivo.csv"  # ← CAMBIAR: ruta dentro de tu Drive
 # ───────────────────────────────────────────────────────────
 
-ruta_completa = f"/content/drive/{DRIVE_PATH}"
-
-df_raw = pd.read_csv(ruta_completa)
+df_raw = pd.read_csv(DRIVE_PATH)
 print(f"✅ Dataset cargado desde Google Drive — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
 ```
