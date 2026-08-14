@@ -2,7 +2,7 @@
 
 
 
-### Opción A — Plantilla con Fallback Automático
+### Opciones A — Plantillas con Fallback Automático
 
 
 
@@ -56,7 +56,56 @@ if df_raw is None:
 print(f"\nDataset listo — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
 
 ```
+### Reproducible para Colab, VS code y Jupyter Lab
 
+```python
+# ── Configuración ──────────────────────────────────────────
+DATA_PATH_LOCAL = r"data/raw/archivo.csv"   # ← CAMBIAR: ruta local
+DRIVE_PATH_REL  = "MyDrive/ruta/en/drive/archivo.csv"  # ← CAMBIAR: ruta relativa dentro de Drive
+SEPARATOR       = ","                        # ← CAMBIAR: separador del CSV
+ENCODING        = "utf-8"                    # ← CAMBIAR: encoding del archivo
+# ───────────────────────────────────────────────────────────
+
+df_raw = None
+
+# ── Prioridad 1: archivo local ─────────────────────────────
+import os
+if os.path.exists(DATA_PATH_LOCAL):
+    df_raw = pd.read_csv(DATA_PATH_LOCAL, sep=SEPARATOR, encoding=ENCODING)
+    print(f"✅ Dataset cargado desde archivo local: {DATA_PATH_LOCAL}")
+
+# ── Prioridad 2: Google Drive (solo si estamos en Colab) ──
+if df_raw is None:
+    try:
+        # Detectamos si estamos en Colab
+        import sys
+        IN_COLAB = 'google.colab' in sys.modules
+    except:
+        IN_COLAB = False
+
+    if IN_COLAB:
+        try:
+            from google.colab import drive
+            drive.mount('/content/drive')
+            ruta_drive = f"/content/drive/{DRIVE_PATH_REL}"
+            df_raw = pd.read_csv(ruta_drive, sep=SEPARATOR, encoding=ENCODING)
+            print(f"✅ Dataset cargado desde Google Drive: {ruta_drive}")
+        except Exception as e:
+            print(f"⚠️ Error al cargar desde Google Drive: {e}")
+    else:
+        print("ℹ️ No estás en Colab. Omitiendo carga desde Google Drive.")
+
+# ── Prioridad 3: error si no se pudo cargar ────────────────
+if df_raw is None:
+    raise FileNotFoundError(
+        f"No se pudo cargar el dataset.\n"
+        f"Opciones:\n"
+        f"  1. Colocá el archivo en: {DATA_PATH_LOCAL}\n"
+        f"  2. Si usás Colab, ajustá DRIVE_PATH_REL y asegurate de tener el archivo en Drive.\n"
+        f"  3. Subí el archivo manualmente a Colab con files.upload() y ajustá la ruta."
+    )
+
+print(f"\nDataset listo — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
 
 
 ### Opción B — Desde archivo local
