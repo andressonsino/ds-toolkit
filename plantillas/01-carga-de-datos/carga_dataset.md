@@ -107,7 +107,7 @@ if df_raw is None:
 
 print(f"\nDataset listo — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
 
-
+```
 ### Opción B — Desde archivo local
 
 
