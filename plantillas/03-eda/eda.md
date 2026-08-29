@@ -11,25 +11,27 @@
 1. [Setup](#1-setup)
 2. [Enriquecimiento manual de columnas](#2-enriquecimiento-manual-de-columnas)
 3. [Diagnóstico estructural](#3-diagnóstico-estructural)
-4. [Variables numéricas — distribución](#4-variables-numéricas--distribución)
+4. [Variables numéricas — distribución en grilla](#4-variables-numéricas--distribución-en-grilla)
 5. [Variables numéricas — outliers](#5-variables-numéricas--outliers)
 6. [Variables numéricas — correlación](#6-variables-numéricas--correlación)
 7. [Variables categóricas — frecuencias](#7-variables-categóricas--frecuencias)
 8. [Relación entre variables](#8-relación-entre-variables)
-9. [Serie temporal (si hay fecha)](#9-serie-temporal-si-hay-fecha)
-10. [Qué gráfico usar según el caso](#10-qué-gráfico-usar-según-el-caso)
+9. [Gráficos que marcan la diferencia](#9-gráficos-que-marcan-la-diferencia)
+10. [Serie temporal (si hay fecha)](#10-serie-temporal-si-hay-fecha)
+11. [Qué gráfico usar según el caso](#11-qué-gráfico-usar-según-el-caso)
 
 ---
 
 > **Orden recomendado en todo EDA:**
 > 1. Setup
 > 2. Carga y diagnóstico estructural ← siempre
-> 3. Histograma por cada numérica ← siempre
+> 3. Grilla de distribuciones ← siempre
 > 4. Boxplot para outliers ← siempre
 > 5. Heatmap de correlación ← siempre si hay 2+ numéricas
 > 6. Countplot por cada categórica ← si hay categóricas
 > 7. Scatterplot o barplot ← según lo que muestre el heatmap
-> 8. Lineplot ← solo si hay fecha
+> 8. Gráficos diferenciales ← según el dataset y el objetivo
+> 9. Lineplot ← solo si hay fecha
 
 ---
 
@@ -42,6 +44,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import seaborn as sns
 import warnings
+import math
 
 # Supresión de warnings
 warnings.filterwarnings('ignore')
@@ -75,8 +78,8 @@ valores_manuales = {
 }
 
 # ── Columna de búsqueda y columna a completar ─────────────────────────────
-COL_BUSQUEDA = 'COLUMNA_NOMBRE'    # ← reemplazar: columna donde buscar el nombre
-COL_COMPLETAR = 'COLUMNA_NULOS'   # ← reemplazar: columna a completar
+COL_BUSQUEDA  = 'COLUMNA_NOMBRE'   # ← reemplazar: columna donde buscar el nombre
+COL_COMPLETAR = 'COLUMNA_NULOS'    # ← reemplazar: columna a completar
 
 for nombre, valor in valores_manuales.items():
     mask = df_clean[COL_BUSQUEDA].str.contains(nombre, na=False)
@@ -86,7 +89,7 @@ for nombre, valor in valores_manuales.items():
         df_clean.loc[mask, COL_COMPLETAR] = valor
 
 # ── Verificar cobertura ───────────────────────────────────────────────────
-total = len(df_clean)
+total       = len(df_clean)
 completados = df_clean[COL_COMPLETAR].notna().sum()
 print(f'Cobertura: {completados}/{total} ({completados/total*100:.1f}%)')
 display(df_clean[[COL_BUSQUEDA, COL_COMPLETAR]])
@@ -97,6 +100,7 @@ display(df_clean[[COL_BUSQUEDA, COL_COMPLETAR]])
 > # Fuente: Transfermarkt — https://www.transfermarkt.com.ar/...
 > # Fecha de consulta: DD/MM/AAAA
 > ```
+
 ---
 
 ## 3. Diagnóstico estructural
@@ -121,8 +125,8 @@ df_clean.head()
 ```python
 # Nulos y porcentaje
 nulos = pd.DataFrame({
-    'Nulos': df_clean.isnull().sum(),
-    'Porcentaje': (df_clean.isnull().sum() / len(df_clean) * 100).round(2)
+    'Nulos':       df_clean.isnull().sum(),
+    'Porcentaje':  (df_clean.isnull().sum() / len(df_clean) * 100).round(2)
 })
 display(nulos[nulos['Nulos'] > 0])
 ```
@@ -139,22 +143,41 @@ df_clean.nunique().sort_values()
 
 ---
 
-## 4. Variables numéricas — distribución
+## 4. Variables numéricas — distribución en grilla
 
-**Cuándo usarlo:** siempre. Es el primer gráfico de cualquier variable numérica.  
-**Qué buscás:** si los datos están concentrados, dispersos, sesgados o tienen dos grupos.
+**Cuándo usarlo:** siempre. Reemplaza el loop de gráficos individuales por una grilla compacta y profesional.  
+**Por qué grilla y no loop:** un gráfico por celda para cada columna genera decenas de outputs inconexos que no permiten comparar. La grilla muestra todo junto, permite detectar patrones entre variables de un vistazo, y es lo que se usa en un reporte real.
 
 ```python
 columnas_numericas = df_clean.select_dtypes(include='number').columns.tolist()
 
-for col in columnas_numericas:
-    plt.figure(figsize=(12, 5))
-    sns.histplot(data=df_clean, x=col, kde=True, color='steelblue', alpha=0.7)
-    plt.title(f'Distribución de {col}')
-    plt.xlabel(col)
-    plt.tight_layout()
-    plt.grid(False)
-    plt.show()
+n_cols = 3
+n_rows = math.ceil(len(columnas_numericas) / n_cols)
+
+fig, axes = plt.subplots(n_rows, n_cols, figsize=(18, n_rows * 4))
+axes = axes.flatten()
+
+for i, col in enumerate(columnas_numericas):
+    sns.histplot(
+        data=df_clean,
+        x=col,
+        kde=True,
+        ax=axes[i],
+        color='steelblue',
+        alpha=0.7,
+        edgecolor='white'
+    )
+    axes[i].set_title(col, fontsize=13, fontweight='bold')
+    axes[i].set_xlabel('')
+    axes[i].grid(False)
+
+# Ocultar subplots vacíos si el número de columnas no es múltiplo de n_cols
+for j in range(i + 1, len(axes)):
+    axes[j].set_visible(False)
+
+fig.suptitle('Distribución de variables numéricas', fontsize=16, fontweight='bold', y=1.01)
+plt.tight_layout()
+plt.show()
 ```
 
 > **Cómo interpretar:**
@@ -167,30 +190,40 @@ for col in columnas_numericas:
 
 ## 5. Variables numéricas — outliers
 
-**Cuándo usarlo:** siempre, después del histograma.  
+**Cuándo usarlo:** siempre, después de la grilla de distribuciones.  
 **Qué buscás:** puntos fuera de los bigotes = outliers estadísticos.
 
 ```python
-# Boxplot de todas las variables numéricas
-plt.figure(figsize=(14, 10))
-df_clean[columnas_numericas].boxplot(
-    grid=False,                
-    patch_artist=True,
-    boxprops=dict(facecolor='skyblue', color='navy'),   
-    whiskerprops=dict(color='navy'),
-    capprops=dict(color='navy'),
-    medianprops=dict(color='darkred', linewidth=2) 
-)         
-plt.title('Detección de outliers — Variables numéricas')
-plt.xticks(rotation=45)
+# Boxplot de todas las variables numéricas en grilla
+n_cols = 3
+n_rows = math.ceil(len(columnas_numericas) / n_cols)
+
+fig, axes = plt.subplots(n_rows, n_cols, figsize=(18, n_rows * 4))
+axes = axes.flatten()
+
+for i, col in enumerate(columnas_numericas):
+    axes[i].boxplot(
+        df_clean[col].dropna(),
+        patch_artist=True,
+        boxprops=dict(facecolor='skyblue', color='navy'),
+        whiskerprops=dict(color='navy'),
+        capprops=dict(color='navy'),
+        medianprops=dict(color='darkred', linewidth=2),
+        flierprops=dict(marker='o', markerfacecolor='red', markersize=5, alpha=0.5)
+    )
+    axes[i].set_title(col, fontsize=13, fontweight='bold')
+    axes[i].grid(False)
+
+for j in range(i + 1, len(axes)):
+    axes[j].set_visible(False)
+
+fig.suptitle('Detección de outliers — Variables numéricas', fontsize=16, fontweight='bold', y=1.01)
 plt.tight_layout()
 plt.show()
 ```
 
 ```python
-# Boxplot individual por categoría
-# Reemplazá las columnas con las tuyas
-
+# Boxplot individual por categoría — cuando querés ver outliers por grupo
 plt.figure(figsize=(12, 6))
 sns.boxplot(
     data=df_clean,
@@ -203,6 +236,7 @@ sns.boxplot(
 )
 plt.title('Distribución por categoría')
 plt.tight_layout()
+plt.grid(False)
 plt.show()
 ```
 
@@ -245,7 +279,7 @@ plt.show()
 > - Cercano a `1.0` → correlación positiva fuerte
 > - Cercano a `-1.0` → correlación negativa fuerte
 > - Cercano a `0.0` → sin correlación
-> - Rojo o azul intenso → relación que vale investigar más
+> - Rojo o azul intenso → relación que vale investigar con un scatterplot
 
 ---
 
@@ -276,6 +310,7 @@ p = sns.countplot(
 for container in p.containers:
     p.bar_label(container, label_type='edge', padding=5)
 plt.title('Frecuencia por categoría')
+plt.grid(False)
 plt.tight_layout()
 plt.show()
 ```
@@ -295,6 +330,7 @@ for container in p.containers:
     p.bar_label(container, label_type='edge', padding=5)
 plt.title('Frecuencia por categoría')
 plt.xticks(rotation=45, ha='right')
+plt.grid(False)
 plt.tight_layout()
 plt.show()
 ```
@@ -317,24 +353,21 @@ sns.scatterplot(
     data=df_clean,
     x='COLUMNA_NUMERICA_1',   # ← reemplazar
     y='COLUMNA_NUMERICA_2',   # ← reemplazar
-    hue='COLUMNA_CATEGORICA', # ← reemplazar (opcional)
+    hue='COLUMNA_CATEGORICA', # ← reemplazar (opcional, para ver grupos)
     alpha=0.6
 )
 plt.title('Relación entre variables')
+plt.grid(False)
 plt.tight_layout()
 plt.show()
 ```
-
-> - Diagonal ascendente → correlación positiva
-> - Diagonal descendente → correlación negativa
-> - Nube dispersa → sin correlación
 
 ### 8.2 Numérica vs categórica → Barplot de métrica
 
 **Cuándo usarlo:** cuando querés comparar suma o promedio entre categorías.
 
 ```python
-orden = df_clean.groupby('COLUMNA_CATEGORICA')['COLUMNA_NUMERICA']\
+orden = df_clean.groupby('COLUMNA_CATEGORICA')['COLUMNA_NUMERICA'] \
                 .sum().sort_values(ascending=False).index  # ← reemplazar
 
 plt.figure(figsize=(12, 6))
@@ -350,6 +383,7 @@ sns.barplot(
 )
 plt.title('Métrica por categoría')
 plt.xticks(rotation=45, ha='right')
+plt.grid(False)
 plt.tight_layout()
 plt.show()
 ```
@@ -372,7 +406,182 @@ plt.show()
 
 ---
 
-## 9. Serie temporal (si hay fecha)
+## 9. Gráficos que marcan la diferencia
+
+Estos gráficos no son los que todos usan. Los agregás cuando el dataset y el objetivo lo justifican — no como decoración, sino porque responden preguntas que los convencionales no pueden.
+
+---
+
+### 9.1 Violinplot — distribución + densidad por grupo
+
+**Cuándo:** tenés una variable numérica y querés ver cómo se distribuye dentro de cada categoría, incluyendo la forma completa (no solo la caja).  
+**Qué aporta sobre el boxplot:** el boxplot muestra los cuartiles; el violín muestra dónde se concentran realmente los datos — si hay un solo pico, dos, si está sesgado.
+
+```python
+plt.figure(figsize=(14, 6))
+sns.violinplot(
+    data=df_clean,
+    x='COLUMNA_CATEGORICA',   # ← reemplazar
+    y='COLUMNA_NUMERICA',     # ← reemplazar
+    hue='COLUMNA_CATEGORICA',
+    legend=False,
+    palette='Set2',
+    inner='box'               # muestra la caja del boxplot adentro del violín
+)
+plt.title('Distribución por categoría — Violinplot')
+plt.xticks(rotation=45, ha='right')
+plt.grid(False)
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+### 9.2 Stripplot sobre Boxplot — ver los puntos reales
+
+**Cuándo:** el dataset no es muy grande (menos de 2000 filas) y querés mostrar cada dato real encima del boxplot.  
+**Qué aporta:** hace visible si hay clusters de datos, si los outliers son aislados o si hay muchos, y cuántos registros hay realmente en cada grupo.
+
+```python
+plt.figure(figsize=(14, 6))
+sns.boxplot(
+    data=df_clean,
+    x='COLUMNA_CATEGORICA',   # ← reemplazar
+    y='COLUMNA_NUMERICA',     # ← reemplazar
+    hue='COLUMNA_CATEGORICA',
+    legend=False,
+    palette='pastel',
+    flierprops={'marker': ''}  # oculta outliers del boxplot porque el strip los muestra
+)
+sns.stripplot(
+    data=df_clean,
+    x='COLUMNA_CATEGORICA',   # ← reemplazar
+    y='COLUMNA_NUMERICA',     # ← reemplazar
+    color='black',
+    alpha=0.35,
+    size=4,
+    jitter=True               # separa los puntos para que no se apilen
+)
+plt.title('Distribución real por categoría')
+plt.xticks(rotation=45, ha='right')
+plt.grid(False)
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+### 9.3 KDE por grupo — comparar distribuciones entre categorías
+
+**Cuándo:** tenés una variable numérica y querés comparar cómo se distribuye en dos o más grupos en la misma escala.  
+**Qué aporta sobre el histograma:** superpone las curvas sin barras, lo que hace mucho más fácil ver si los grupos tienen distribuciones distintas, similares o si se solapan.
+
+```python
+plt.figure(figsize=(12, 6))
+for grupo in df_clean['COLUMNA_CATEGORICA'].unique():    # ← reemplazar
+    subset = df_clean[df_clean['COLUMNA_CATEGORICA'] == grupo]
+    sns.kdeplot(
+        data=subset,
+        x='COLUMNA_NUMERICA',                            # ← reemplazar
+        label=str(grupo),
+        fill=True,
+        alpha=0.25,
+        linewidth=2
+    )
+plt.title('Distribución por grupo — KDE')
+plt.legend(title='COLUMNA_CATEGORICA')                   # ← reemplazar
+plt.grid(False)
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+### 9.4 Heatmap de tabla pivote — cruzar dos categóricas con una métrica
+
+**Cuándo:** tenés dos variables categóricas y querés ver cómo se comporta una métrica numérica en cada combinación.  
+**Qué aporta:** reemplaza una tabla de números difícil de leer por un mapa de calor donde los patrones se ven de un vistazo.
+
+```python
+pivot = df_clean.pivot_table(
+    values='COLUMNA_NUMERICA',        # ← reemplazar: la métrica que querés ver
+    index='COLUMNA_CATEGORICA_1',     # ← reemplazar: filas
+    columns='COLUMNA_CATEGORICA_2',   # ← reemplazar: columnas
+    aggfunc='mean'                    # cambiar a sum, median, count según el caso
+)
+
+plt.figure(figsize=(14, 8))
+sns.heatmap(
+    pivot,
+    annot=True,
+    fmt='.1f',
+    cmap='YlOrRd',
+    linewidths=0.5
+)
+plt.title('Métrica promedio por combinación de categorías')
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+### 9.5 Barras apiladas porcentuales — composición dentro de cada grupo
+
+**Cuándo:** tenés dos variables categóricas y querés ver la proporción de una dentro de la otra.  
+**Qué aporta:** mientras el countplot muestra volumen absoluto, las barras apiladas al 100% muestran composición — cuánto representa cada subcategoría dentro de cada grupo.
+
+```python
+# Tabla de frecuencias cruzadas normalizada por fila
+tabla = pd.crosstab(
+    df_clean['COLUMNA_CATEGORICA_1'],   # ← reemplazar: eje X
+    df_clean['COLUMNA_CATEGORICA_2'],   # ← reemplazar: subcategorías (colores)
+    normalize='index'                   # normaliza por fila → porcentajes
+) * 100
+
+tabla.plot(
+    kind='bar',
+    stacked=True,
+    figsize=(14, 6),
+    colormap='Set2',
+    edgecolor='white',
+    width=0.7
+)
+plt.title('Composición porcentual por grupo')
+plt.ylabel('Porcentaje (%)')
+plt.xlabel('')
+plt.xticks(rotation=45, ha='right')
+plt.legend(title='COLUMNA_CATEGORICA_2', bbox_to_anchor=(1.05, 1))  # ← reemplazar
+plt.grid(False)
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+### 9.6 Scatterplot con regresión — tendencia entre dos numéricas
+
+**Cuándo:** el heatmap muestra correlación fuerte entre dos variables y querés mostrar la tendencia con una línea.  
+**Qué aporta:** el scatterplot muestra los puntos; `regplot` agrega la línea de tendencia y la banda de confianza al 95% — comunica correlación de forma mucho más clara.
+
+```python
+plt.figure(figsize=(12, 6))
+sns.regplot(
+    data=df_clean,
+    x='COLUMNA_NUMERICA_1',   # ← reemplazar
+    y='COLUMNA_NUMERICA_2',   # ← reemplazar
+    scatter_kws={'alpha': 0.4, 'color': 'steelblue', 's': 40},
+    line_kws={'color': 'darkred', 'linewidth': 2},
+    ci=95                     # banda de confianza al 95%
+)
+plt.title('Tendencia: COLUMNA_1 vs COLUMNA_2')   # ← reemplazar
+plt.grid(False)
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## 10. Serie temporal (si hay fecha)
 
 **Cuándo usarlo:** solo si el dataset tiene una columna de fecha.
 
@@ -383,33 +592,38 @@ df_clean['COLUMNA_FECHA'] = pd.to_datetime(df_clean['COLUMNA_FECHA'])  # ← ree
 # Agrupar por mes
 serie = df_clean.groupby(
     df_clean['COLUMNA_FECHA'].dt.to_period('M')
-)['COLUMNA_NUMERICA'].sum().reset_index()  # ← reemplazar columnas
+)['COLUMNA_NUMERICA'].sum().reset_index()   # ← reemplazar columnas
 serie['COLUMNA_FECHA'] = serie['COLUMNA_FECHA'].astype(str)
 
 plt.figure(figsize=(14, 6))
 sns.lineplot(data=serie, x='COLUMNA_FECHA', y='COLUMNA_NUMERICA', marker='o')
 plt.title('Evolución temporal')
 plt.xticks(rotation=45, ha='right')
+plt.grid(False)
 plt.tight_layout()
 plt.show()
 ```
 
 ---
 
-## 10. Qué gráfico usar según el caso
+## 11. Qué gráfico usar según el caso
 
 | Tenés... | Querés saber... | Usá |
 |----------|-----------------|-----|
-| 1 variable numérica | Cómo se distribuye | Histograma |
-| 1 variable numérica | Si hay outliers | Boxplot |
+| 1 variable numérica | Cómo se distribuye | Histograma (grilla) |
+| 1 variable numérica | Si hay outliers | Boxplot (grilla) |
 | 2+ variables numéricas | Si están relacionadas | Heatmap de correlación |
 | 2 numéricas específicas | Cómo se relacionan visualmente | Scatterplot |
+| 2 numéricas con tendencia | Confirmar y mostrar correlación | Regplot |
 | Muchas numéricas | Ver todas las relaciones de una | Pairplot |
 | 1 variable categórica | Cuántos hay por categoría | Countplot |
 | 1 categórica + 1 numérica | Métrica por categoría (suma, media) | Barplot |
-| 1 numérica + 1 categórica | Dispersión y outliers por grupo | Boxplot agrupado |
-| 1 fecha + 1 numérica | Cómo evoluciona en el tiempo | Lineplot |
+| 1 numérica + 1 categórica | Distribución completa por grupo | Violinplot |
+| 1 numérica + 1 categórica | Outliers + puntos reales por grupo | Boxplot + Stripplot |
+| 1 numérica + 1 categórica | Comparar forma de distribución entre grupos | KDE por grupo |
 | 2 categóricas + 1 numérica | Cruzar dos dimensiones | Heatmap de pivot |
+| 2 categóricas | Ver composición proporcional | Barras apiladas % |
+| 1 fecha + 1 numérica | Cómo evoluciona en el tiempo | Lineplot |
 
 ---
 
