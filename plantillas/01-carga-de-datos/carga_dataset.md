@@ -61,7 +61,7 @@ print(f"\nDataset listo — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1
 ```python
 # ── Configuración ──────────────────────────────────────────
 DATA_PATH_LOCAL = r"data/raw/archivo.csv"   # ← CAMBIAR: ruta local
-DRIVE_PATH_REL  = "MyDrive/ruta/en/drive/archivo.csv"  # ← CAMBIAR: ruta relativa dentro de Drive
+DRIVE_PATH_REL  = "content/drive/MyDrive/ruta/en/drive/archivo.csv"  # ← CAMBIAR: ruta relativa dentro de Drive
 SEPARATOR       = ","                        # ← CAMBIAR: separador del CSV
 ENCODING        = "utf-8"                    # ← CAMBIAR: encoding del archivo
 # ───────────────────────────────────────────────────────────
@@ -87,7 +87,7 @@ if df_raw is None:
         try:
             from google.colab import drive
             drive.mount('/content/drive')
-            ruta_drive = f"/content/drive/{DRIVE_PATH_REL}"
+            ruta_drive = f"{DRIVE_PATH_REL}"
             df_raw = pd.read_csv(ruta_drive, sep=SEPARATOR, encoding=ENCODING)
             print(f"✅ Dataset cargado desde Google Drive: {ruta_drive}")
         except Exception as e:
