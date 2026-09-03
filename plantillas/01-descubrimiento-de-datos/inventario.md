@@ -136,4 +136,4 @@ Al revisar cada archivo, prestar atención a:
 ---
 
 *Metodología de integración de datos — ds-toolkit by andressonsino*  
-*Parte de: `06-integracion-datos/`*
+*Parte de: `01-descubrimiento-de-datos/`*
