@@ -155,13 +155,17 @@ def limpiar_dni(valor):
 ```python
 def limpiar_email(valor):
     """
-    Convierte a minúsculas y elimina espacios.
+    Convierte a minúsculas, elimina espacios y corrige @@ duplicados.
     Si no tiene @ → pd.NA (no es un email válido)
     """
     if pd.isna(valor):
         return pd.NA
 
     email = str(valor).strip().lower()
+
+    # Corrige errores de carga como a@@gmail.com → a@gmail.com
+    while "@@" in email:
+        email = email.replace("@@", "@")
 
     if '@' not in email:
         return pd.NA
