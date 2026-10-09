@@ -188,12 +188,61 @@ print(df_raw.dtypes)
 
 ```python
 # ── Fechas ────────────────────────────────────────────────────────────────
-# Cuándo: columnas que son fechas pero llegaron como texto (object)
-df_raw['COLUMNA_FECHA'] = pd.to_datetime(df_raw['COLUMNA_FECHA'])              # ← reemplazar
-df_raw['COLUMNA_FECHA'] = pd.to_datetime(df_raw['COLUMNA_FECHA'],
-                                          format='%d/%m/%Y')   # formato específico
-df_raw['COLUMNA_FECHA'] = pd.to_datetime(df_raw['COLUMNA_FECHA'],
-                                          errors='coerce')     # NaN si no puede parsear
+# Siempre hacer esto primero para saber con qué formato llegaron los datos
+print(df_raw['COLUMNA_FECHA'].dtype)           # ← reemplazar — debe decir 'object'
+print(df_raw['COLUMNA_FECHA'].dropna().head(10))  # ver cómo se ven las fechas reales
+
+# CASO A: el formato es consistente en todo el dataset y lo conocés
+# Usá format= para ser explícito — es más rápido y más seguro
+# Errores comunes:
+#   %d/%m/%Y → '21/08/1980'  (día/mes/año con barras)
+#   %d-%m-%Y → '21-08-1980'  (día/mes/año con guiones)
+#   %Y-%m-%d → '1980-08-21'  (año-mes-día, formato ISO — el más recomendado)
+#   %d/%m/%y → '21/08/80'    (año de 2 dígitos — evitar si podés)
+df_raw['COLUMNA_FECHA'] = pd.to_datetime(         # ← reemplazar
+    df_raw['COLUMNA_FECHA'],
+    format='%d/%m/%Y'                             # ← reemplazar con tu formato real
+)
+
+# CASO B: el formato es inconsistente o no lo conocés
+# pandas lo infiere solo — más lento pero más flexible
+# ⚠️ si hay ambigüedad (01/02/03) pandas puede adivinar mal
+df_raw['COLUMNA_FECHA'] = pd.to_datetime(         # ← reemplazar
+    df_raw['COLUMNA_FECHA'],
+    dayfirst=True           # le das una pista: el primer número es el día
+)
+
+# CASO C: hay fechas inválidas mezcladas ('31/02/1990', texto vacío, etc.)
+# errors='coerce' convierte lo que no puede parsear en NaT (equivalente a NaN para fechas)
+# Nunca lanza error — ideal para datos sucios
+df_raw['COLUMNA_FECHA'] = pd.to_datetime(         # ← reemplazar
+    df_raw['COLUMNA_FECHA'],
+    format='%d/%m/%Y',      # ← reemplazar — si no sabés el formato, sacá esta línea
+    errors='coerce'
+)
+
+# CASO D: mezcla de formatos distintos en la misma columna ('21/08/1980' y '1980-08-21')
+# format='mixed' le dice a pandas que intente inferir cada valor por separado
+# Solo disponible en pandas >= 2.0
+df_raw['COLUMNA_FECHA'] = pd.to_datetime(         # ← reemplazar
+    df_raw['COLUMNA_FECHA'],
+    format='mixed',
+    dayfirst=True,
+    errors='coerce'
+)
+# ─── Chequeo de consistencia de Fechas ───────────────────────────────
+fecha_minima = df_raw['COLUMNA_FECHA'].min()
+fecha_maxima = df_raw['COLUMNA_FECHA'].max()
+
+print(f"Fecha más antigua: {fecha_minima}")
+print(f"Fecha más reciente: {fecha_maxima}")
+
+# ─── Verificar cuántas fechas quedaron como NaT ──────────────────────
+nats = df_raw['COLUMNA_FECHA'].isna().sum()       # ← reemplazar
+print(f'Fechas no convertidas (NaT): {nats}')
+
+# Si hay NaT, inspeccioná cuáles eran los valores originales problemáticos
+# (guardá el df original antes de convertir para poder hacer esto)
 ```
 
 ```python
