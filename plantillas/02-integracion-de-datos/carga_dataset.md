@@ -256,3 +256,18 @@ DRIVE_PATH = "/content/drive/MyDrive/data/archivo.csv"  # ← CAMBIAR: ruta dent
 df_raw = pd.read_csv(DRIVE_PATH)
 print(f"✅ Dataset cargado desde Google Drive — Filas: {df_raw.shape[0]} | Columnas: {df_raw.shape[1]}")
 ```
+### Opción I — Desde Excel Multipestaña
+
+**Cuándo usarla:** cuando se extraen datos de otras fuentes a través de Google Sheets y se almacenan en distintas pestañas.
+
+```python
+import pandas as pd
+
+# Lectura de pestañas individuales
+df_clientes = pd.read_excel('archivo_descargado.xlsx', sheet_name='Clientes')
+df_ventas = pd.read_excel('archivo_descargado.xlsx', sheet_name='Ventas')
+
+# (Opcional) Leer todas las pestañas de golpe en un diccionario
+todas_las_pestanas = pd.read_excel('archivo_descargado.xlsx', sheet_name=None)
+
+```
