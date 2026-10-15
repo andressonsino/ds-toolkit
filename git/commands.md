@@ -9,6 +9,10 @@
 * `git init`: Inicializa un nuevo repositorio de Git en la carpeta donde estás. Es el primer paso para empezar a
 rastrear cambios en un proyecto.
 * `cd <nombre-carpeta>`: Entra a la carpeta del proyecto. Ya estás dentro del repositorio haciendo esto.
+
+### Recuperar archivo específico de repositorio
+* `git checkout <hash_del_commit> -- <ruta/del/archivo>`: Restaura únicamente un archivo específico desde un commit anterior trayéndolo al presente, sin afectar tus actualizaciones recientes en el resto de las carpetas ni romper el historial.
+
 ### ¿Dónde estoy?
 - `pwd`: Muestra la carpeta actual.
 - `git status`: Si tira "fatal: not a git repository...", no estás dentro de ningún repo.
