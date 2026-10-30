@@ -191,6 +191,101 @@ erDiagram
 
 ---
 
+## Modelo Constelación (Galaxy Schema)
+
+**Cuándo usarlo:** cuando necesitás analizar **más de un proceso de negocio** que comparten dimensiones. Por ejemplo: ventas y devoluciones comparten las mismas dimensiones de fecha, cliente y producto — no tiene sentido duplicarlas.
+
+**Qué cambia respecto a estrella y copo de nieve:** en los modelos anteriores hay una sola tabla de hechos central. En la constelación hay **múltiples tablas de hechos** que se conectan a las **mismas dimensiones compartidas**. Las dimensiones siguen siendo planas (como en estrella), lo que cambia es que el centro del diagrama ya no es una sola fact sino varias.
+
+**Señal de que necesitás una constelación:** cuando tenés dos o más procesos distintos (ventas, devoluciones, envíos, presupuestos) que usan las mismas entidades descriptivas (mismo cliente, mismo producto, misma fecha).
+
+```mermaid
+erDiagram
+
+    %% ── TABLA DE HECHOS 1 — proceso de ventas ───────────────────────────────
+    FACT_VENTAS {
+        int     id_venta        PK
+        int     id_fecha        FK
+        int     id_cliente      FK
+        int     id_producto     FK
+        int     id_sucursal     FK
+        int     cantidad
+        decimal precio_unitario
+        decimal descuento
+        decimal monto_total
+    }
+
+    %% ── TABLA DE HECHOS 2 — proceso de devoluciones ─────────────────────────
+    %% Comparte DIM_FECHA, DIM_CLIENTE, DIM_PRODUCTO y DIM_SUCURSAL con FACT_VENTAS
+    %% Tiene sus propias métricas: motivo y monto_devuelto
+    FACT_DEVOLUCIONES {
+        int     id_devolucion   PK
+        int     id_fecha        FK
+        int     id_cliente      FK
+        int     id_producto     FK
+        int     id_sucursal     FK
+        int     id_venta_origen FK
+        int     cantidad
+        string  motivo
+        decimal monto_devuelto
+    }
+
+    %% ── DIMENSIONES COMPARTIDAS ───────────────────────────────────────────────
+    %% Estas dimensiones son usadas por AMBAS tablas de hechos
+    DIM_FECHA {
+        int     id_fecha        PK
+        date    fecha
+        int     dia
+        int     mes
+        int     trimestre
+        int     anio
+        string  dia_semana
+    }
+
+    DIM_CLIENTE {
+        int     id_cliente      PK
+        string  nombre_completo
+        string  email
+        string  ciudad
+        string  provincia
+        string  segmento
+    }
+
+    DIM_PRODUCTO {
+        int     id_producto     PK
+        string  nombre_producto
+        string  categoria
+        string  subcategoria
+        string  marca
+        decimal precio_lista
+    }
+
+    DIM_SUCURSAL {
+        int     id_sucursal     PK
+        string  nombre
+        string  ciudad
+        string  zona
+        int     metros_cuadrados
+    }
+
+    %% ── RELACIONES — FACT_VENTAS → DIMENSIONES ───────────────────────────────
+    DIM_FECHA     ||--o{ FACT_VENTAS : "tiene"
+    DIM_CLIENTE   ||--o{ FACT_VENTAS : "realiza"
+    DIM_PRODUCTO  ||--o{ FACT_VENTAS : "incluye"
+    DIM_SUCURSAL  ||--o{ FACT_VENTAS : "genera"
+
+    %% ── RELACIONES — FACT_DEVOLUCIONES → LAS MISMAS DIMENSIONES ─────────────
+    DIM_FECHA     ||--o{ FACT_DEVOLUCIONES : "registra"
+    DIM_CLIENTE   ||--o{ FACT_DEVOLUCIONES : "solicita"
+    DIM_PRODUCTO  ||--o{ FACT_DEVOLUCIONES : "devuelve"
+    DIM_SUCURSAL  ||--o{ FACT_DEVOLUCIONES : "procesa"
+
+    %% ── RELACIÓN ENTRE FACTS (opcional — venta origen de la devolución) ───────
+    FACT_VENTAS   ||--o{ FACT_DEVOLUCIONES : "origina"
+```
+
+---
+
 ## Referencia rápida — Sintaxis Mermaid ER
 
 ```
@@ -216,13 +311,26 @@ Estructura de relación:
 
 ---
 
+## Comparación rápida entre los tres modelos
+
+| | Estrella | Copo de Nieve | Constelación |
+|---|---|---|---|
+| Tablas de hechos | 1 | 1 | 2 o más |
+| Dimensiones | Planas | Normalizadas en jerarquía | Planas y compartidas |
+| Complejidad | Baja | Media | Media-Alta |
+| Cuándo usarlo | Siempre que se pueda | Dimensiones muy grandes | Múltiples procesos de negocio |
+| Relaciones entre facts | No | No | Opcionales |
+
+---
+
 ## Cómo adaptar estas plantillas a tu proyecto
 
 1. **Renombrá las tablas** — cambiá `FACT_VENTAS`, `DIM_CLIENTE`, etc. por los nombres reales
 2. **Editá las columnas** — agregá, quitá o renombrá columnas dentro de cada bloque `{}`
 3. **Ajustá las relaciones** — solo modificá los nombres de tabla y la etiqueta entre comillas
 4. **En copo de nieve** — agregá o quitá subdimensiones según cuántos niveles tenga tu jerarquía
-5. **No toques** — la sintaxis `||--o{`, los `%%`, ni la estructura de bloques
+5. **En constelación** — agregá una nueva tabla de hechos y conectala a las dimensiones que comparte con las existentes
+6. **No toques** — la sintaxis `||--o{`, los `%%`, ni la estructura de bloques
 
 ---
 
