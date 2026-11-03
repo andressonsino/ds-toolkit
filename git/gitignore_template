@@ -230,6 +230,7 @@ data/
 *.json
 *.zip
 *.tar.gz
+*.sql
 
 # Modelos entrenados
 *.h5
