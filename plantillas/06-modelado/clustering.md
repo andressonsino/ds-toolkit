@@ -78,9 +78,21 @@ plt.rcParams['axes.labelsize'] = 13
 # Reproducibilidad
 RANDOM_STATE = 42
 
-# Rutas de salida — se crean automáticamente
-OUTPUT_PATH = '../outputs'
-CLEAN_PATH  = '../data/clean'
+from pathlib import Path
+
+# Rutas de salida — detectan automáticamente la raíz del proyecto (notebooks/, raíz en VS Code o Colab)
+_cwd = Path.cwd()
+if _cwd.name == 'notebooks':
+    BASE_PATH = _cwd.parent
+elif (_cwd / 'data').exists() or (_cwd / 'notebooks').exists() or (_cwd / 'src').exists():
+    BASE_PATH = _cwd
+elif (_cwd.parent / 'data').exists() or (_cwd.parent / 'notebooks').exists():
+    BASE_PATH = _cwd.parent
+else:
+    BASE_PATH = _cwd
+
+OUTPUT_PATH = str(BASE_PATH / 'outputs')
+CLEAN_PATH  = str(BASE_PATH / 'data' / 'clean')
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 os.makedirs(CLEAN_PATH, exist_ok=True)
 ```
@@ -90,7 +102,7 @@ os.makedirs(CLEAN_PATH, exist_ok=True)
 ## 2. Carga del dataset limpio
 
 ```python
-df_clean = pd.read_csv('NOMBRE_ARCHIVO_limpio.csv')     # ← reemplazar
+df_clean = pd.read_csv(os.path.join(CLEAN_PATH, 'NOMBRE_ARCHIVO_limpio.csv'))     # ← reemplazar
 print(f'Dataset cargado: {df_clean.shape[0]} filas x {df_clean.shape[1]} columnas')
 df_clean.head()
 ```
@@ -175,6 +187,8 @@ plt.xlabel('Número de clusters (k)')
 plt.ylabel('Inercia')
 plt.xticks(rango_k)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'clustering_metodo_codo.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -198,6 +212,8 @@ plt.xlabel('Número de clusters (k)')
 plt.ylabel('Silhouette Score')
 plt.xticks(rango_k)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'clustering_silhouette_score.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -296,6 +312,8 @@ sns.heatmap(
 plt.title('Perfil promedio por cluster')
 plt.ylabel('Cluster')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'clustering_heatmap_centroides.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -324,6 +342,8 @@ plt.title('Distribución de clusters por categoría')
 plt.xticks(rotation=45, ha='right')
 plt.legend(title='Cluster')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'clustering_distribucion_categoria.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -341,6 +361,8 @@ sns.boxplot(
 )
 plt.title('Distribución de variable por cluster')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'clustering_boxplot_por_cluster.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -355,6 +377,8 @@ plt.ylabel('Valor promedio')
 plt.xticks(rotation=45, ha='right')
 plt.legend(title='Cluster')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'clustering_barplot_medias.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -397,6 +421,8 @@ plt.xlabel(f'PC1 ({varianza_explicada[0]*100:.1f}% varianza)')
 plt.ylabel(f'PC2 ({varianza_explicada[1]*100:.1f}% varianza)')
 plt.legend()
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'clustering_pca_clusters.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -422,6 +448,8 @@ plt.title('Clusters visualizados con t-SNE')
 plt.xlabel('t-SNE 1')
 plt.ylabel('t-SNE 2')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'clustering_tsne_clusters.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -493,14 +521,16 @@ for nombre, labels in algoritmos.items():
 import joblib
 
 # Guardar modelo y scaler
-joblib.dump(kmeans, 'modelo_kmeans.pkl')
-joblib.dump(scaler, 'scaler_clustering.pkl')
-print('Modelo y scaler guardados')
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+joblib.dump(kmeans, os.path.join(OUTPUT_PATH, 'modelo_kmeans.pkl'))
+joblib.dump(scaler, os.path.join(OUTPUT_PATH, 'scaler_clustering.pkl'))
+print(f'Modelo y scaler guardados en: {OUTPUT_PATH}')
 ```
 
 ```python
 # Exportar dataset con clusters asignados
-nombre_salida = 'NOMBRE_DATASET_con_clusters.csv'        # ← reemplazar
+os.makedirs(CLEAN_PATH, exist_ok=True)
+nombre_salida = os.path.join(CLEAN_PATH, 'NOMBRE_DATASET_con_clusters.csv')        # ← reemplazar
 df_clean.to_csv(nombre_salida, index=False)
 print(f'Dataset exportado: {nombre_salida}')
 ```

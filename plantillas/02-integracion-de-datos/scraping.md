@@ -69,11 +69,25 @@ HEADERS = {
     "Connection": "keep-alive",
 }
 
-# Rutas de salida — se crean automáticamente
-OUTPUT_PATH = '../outputs'
-CLEAN_PATH  = '../data/clean'
+from pathlib import Path
+
+# Rutas de salida — detectan automáticamente la raíz del proyecto (notebooks/, raíz en VS Code o Colab)
+_cwd = Path.cwd()
+if _cwd.name == 'notebooks':
+    BASE_PATH = _cwd.parent
+elif (_cwd / 'data').exists() or (_cwd / 'notebooks').exists() or (_cwd / 'src').exists():
+    BASE_PATH = _cwd
+elif (_cwd.parent / 'data').exists() or (_cwd.parent / 'notebooks').exists():
+    BASE_PATH = _cwd.parent
+else:
+    BASE_PATH = _cwd
+
+OUTPUT_PATH = str(BASE_PATH / 'outputs')
+CLEAN_PATH  = str(BASE_PATH / 'data' / 'clean')
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 os.makedirs(CLEAN_PATH, exist_ok=True)
+RAW_PATH    = str(BASE_PATH / 'data' / 'raw')
+os.makedirs(RAW_PATH, exist_ok=True)
 
 print("Configuración lista")
 ```
@@ -170,9 +184,9 @@ for i, df in enumerate(tablas):
 # Tabla correcta identificada en el paso anterior: índice 1
 df_raw = tablas[1]
 
-os.makedirs('data/raw', exist_ok=True)
+os.makedirs(RAW_PATH, exist_ok=True)
 fecha = date.today().strftime('%Y%m%d')
-df_raw.to_csv(f'data/raw/huracan_plantilla_raw_{fecha}.csv', index=False)
+df_raw.to_csv(os.path.join(RAW_PATH, f'huracan_plantilla_raw_{fecha}.csv'), index=False)
 
 print(f"Raw guardado | shape: {df_raw.shape}")
 display(df_raw.head(10))
@@ -239,8 +253,8 @@ display(df_limpio.head(10))
 **Paso 5 — Guardar limpio**
 
 ```python
-os.makedirs('data/processed', exist_ok=True)
-df_limpio.to_csv(f'data/processed/huracan_plantilla_{fecha}.csv', index=False)
+os.makedirs(CLEAN_PATH, exist_ok=True)
+df_limpio.to_csv(os.path.join(CLEAN_PATH, f'huracan_plantilla_{fecha}.csv'), index=False)
 print(f"Procesado guardado | shape: {df_limpio.shape}")
 ```
 
@@ -714,28 +728,30 @@ df = scrape_paginado(
 ## 11. Limpieza post-scraping
 
 ```python
-def guardar_raw(df: pd.DataFrame, nombre: str, carpeta: str = 'data/raw') -> str:
+def guardar_raw(df: pd.DataFrame, nombre: str, carpeta: str = None) -> str:
     """
     Guarda el DataFrame crudo antes de cualquier transformación.
     Incluye la fecha en el nombre para versionado básico.
     Retorna la ruta del archivo guardado.
     """
+    carpeta = carpeta or globals().get('RAW_PATH', '../data/raw')
     os.makedirs(carpeta, exist_ok=True)
     fecha = date.today().strftime('%Y%m%d')
-    ruta = f"{carpeta}/{nombre}_{fecha}.csv"
+    ruta = os.path.join(carpeta, f"{nombre}_{fecha}.csv")
     df.to_csv(ruta, index=False)
     print(f"Raw guardado: {ruta}")
     return ruta
 
 
-def guardar_procesado(df: pd.DataFrame, nombre: str, carpeta: str = 'data/processed') -> str:
+def guardar_procesado(df: pd.DataFrame, nombre: str, carpeta: str = None) -> str:
     """
     Guarda el DataFrame limpio y procesado.
     Retorna la ruta del archivo guardado.
     """
+    carpeta = carpeta or globals().get('CLEAN_PATH', '../data/clean')
     os.makedirs(carpeta, exist_ok=True)
     fecha = date.today().strftime('%Y%m%d')
-    ruta = f"{carpeta}/{nombre}_{fecha}.csv"
+    ruta = os.path.join(carpeta, f"{nombre}_{fecha}.csv")
     df.to_csv(ruta, index=False)
     print(f"Procesado guardado: {ruta}")
     return ruta

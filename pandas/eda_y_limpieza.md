@@ -69,6 +69,25 @@ pd.set_option('display.max_rows', 100)       # muestra hasta 100 filas
 pd.set_option('display.float_format', '{:.2f}'.format)  # 2 decimales
 plt.style.use('seaborn-v0_8')               # estilo de gráficos profesional
 sns.set_palette('husl')                      # paleta de colores
+
+import os
+from pathlib import Path
+
+# Rutas de salida — detectan automáticamente la raíz del proyecto (notebooks/, raíz en VS Code o Colab)
+_cwd = Path.cwd()
+if _cwd.name == 'notebooks':
+    BASE_PATH = _cwd.parent
+elif (_cwd / 'data').exists() or (_cwd / 'notebooks').exists() or (_cwd / 'src').exists():
+    BASE_PATH = _cwd
+elif (_cwd.parent / 'data').exists() or (_cwd.parent / 'notebooks').exists():
+    BASE_PATH = _cwd.parent
+else:
+    BASE_PATH = _cwd
+
+OUTPUT_PATH = str(BASE_PATH / 'outputs')
+CLEAN_PATH  = str(BASE_PATH / 'data' / 'clean')
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+os.makedirs(CLEAN_PATH, exist_ok=True)
 ```
 
 > 💡 **¿Cuándo NO suprimir warnings?**  
@@ -407,6 +426,8 @@ outliers_importe = detectar_outliers_iqr(df_raw, 'Importe')
 plt.figure(figsize=(10, 4))
 df_raw[['Importe', 'Comision_x_venta']].boxplot()
 plt.title('Distribución con outliers')
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'outliers_importe.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -563,6 +584,8 @@ if 'fecha' in df_raw.columns:
     axes[1, 1].tick_params(axis='x', rotation=45)
 
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'eda_resumen.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -572,19 +595,21 @@ plt.show()
 
 ```python
 # ─── Guardar CSV limpio ─────────────────────────────────────────────────────
-df_raw.to_csv('ventas_limpio.csv', index=False, encoding='utf-8')
-print('Dataset exportado como ventas_limpio.csv')
+os.makedirs(CLEAN_PATH, exist_ok=True)
+ruta_csv = os.path.join(CLEAN_PATH, 'ventas_limpio.csv')
+df_raw.to_csv(ruta_csv, index=False, encoding='utf-8')
+print(f'Dataset exportado en: {ruta_csv}')
 
 # ─── Guardar Excel ──────────────────────────────────────────────────────────
-df_raw.to_excel('ventas_limpio.xlsx', index=False, sheet_name='Datos')
+df_raw.to_excel(os.path.join(CLEAN_PATH, 'ventas_limpio.xlsx'), index=False, sheet_name='Datos')
 
 # ─── Guardar con fecha en el nombre ─────────────────────────────────────────
 from datetime import datetime
 fecha_hoy = datetime.now().strftime('%Y%m%d')
-df_raw.to_csv(f'ventas_limpio_{fecha_hoy}.csv', index=False)
+df_raw.to_csv(os.path.join(CLEAN_PATH, f'ventas_limpio_{fecha_hoy}.csv'), index=False)
 
 # ─── Verificar archivo exportado ────────────────────────────────────────────
-df_raw_verificacion = pd.read_csv('ventas_limpio.csv')
+df_raw_verificacion = pd.read_csv(ruta_csv)
 print(f'Archivo exportado: {df_raw_verificacion.shape[0]} filas x {df_raw_verificacion.shape[1]} columnas')
 ```
 

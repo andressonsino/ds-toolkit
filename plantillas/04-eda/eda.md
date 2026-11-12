@@ -58,9 +58,21 @@ plt.rcParams['figure.figsize'] = (12, 6)
 plt.rcParams['axes.titlesize'] = 16
 plt.rcParams['axes.labelsize'] = 13
 
-# Rutas de salida — se crean automáticamente
-OUTPUT_PATH = '../outputs'
-CLEAN_PATH  = '../data/clean'
+from pathlib import Path
+
+# Rutas de salida — detectan automáticamente la raíz del proyecto (notebooks/, raíz en VS Code o Colab)
+_cwd = Path.cwd()
+if _cwd.name == 'notebooks':
+    BASE_PATH = _cwd.parent
+elif (_cwd / 'data').exists() or (_cwd / 'notebooks').exists() or (_cwd / 'src').exists():
+    BASE_PATH = _cwd
+elif (_cwd.parent / 'data').exists() or (_cwd.parent / 'notebooks').exists():
+    BASE_PATH = _cwd.parent
+else:
+    BASE_PATH = _cwd
+
+OUTPUT_PATH = str(BASE_PATH / 'outputs')
+CLEAN_PATH  = str(BASE_PATH / 'data' / 'clean')
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 os.makedirs(CLEAN_PATH, exist_ok=True)
 ```
@@ -184,6 +196,8 @@ for j in range(i + 1, len(axes)):
 
 fig.suptitle('Distribución de variables numéricas', fontsize=16, fontweight='bold', y=1.01)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '01_distribucion_numericas.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -226,6 +240,8 @@ for j in range(i + 1, len(axes)):
 
 fig.suptitle('Detección de outliers — Variables numéricas', fontsize=16, fontweight='bold', y=1.01)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '02_outliers_boxplots.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -244,6 +260,8 @@ sns.boxplot(
 plt.title('Distribución por categoría')
 plt.tight_layout()
 plt.grid(False)
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '03_boxplot_por_categoria.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -279,6 +297,8 @@ sns.heatmap(
 plt.title('Correlación entre variables numéricas')
 plt.tight_layout()
 plt.grid(False)
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '04_heatmap_correlacion.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -319,6 +339,8 @@ for container in p.containers:
 plt.title('Frecuencia por categoría')
 plt.grid(False)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '05_frecuencia_categoria_horizontal.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -339,6 +361,8 @@ plt.title('Frecuencia por categoría')
 plt.xticks(rotation=45, ha='right')
 plt.grid(False)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '06_frecuencia_categoria_vertical.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -366,6 +390,8 @@ sns.scatterplot(
 plt.title('Relación entre variables')
 plt.grid(False)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '07_scatter_numerica_vs_numerica.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -392,6 +418,8 @@ plt.title('Métrica por categoría')
 plt.xticks(rotation=45, ha='right')
 plt.grid(False)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '08_barplot_numerica_vs_categorica.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -408,6 +436,8 @@ sns.pairplot(
     plot_kws={'alpha': 0.5}
 )
 plt.suptitle('Relaciones entre variables numéricas', y=1.02)
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '09_pairplot_numericas.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -439,6 +469,8 @@ plt.title('Distribución por categoría — Violinplot')
 plt.xticks(rotation=45, ha='right')
 plt.grid(False)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '10_violinplot_por_grupo.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -473,6 +505,8 @@ plt.title('Distribución real por categoría')
 plt.xticks(rotation=45, ha='right')
 plt.grid(False)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '11_boxplot_stripplot_puntos.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -499,6 +533,8 @@ plt.title('Distribución por grupo — KDE')
 plt.legend(title='COLUMNA_CATEGORICA')                   # ← reemplazar
 plt.grid(False)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '12_kde_por_grupo.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -527,6 +563,8 @@ sns.heatmap(
 )
 plt.title('Métrica promedio por combinación de categorías')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '13_heatmap_pivote.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -560,6 +598,8 @@ plt.xticks(rotation=45, ha='right')
 plt.legend(title='COLUMNA_CATEGORICA_2', bbox_to_anchor=(1.05, 1))  # ← reemplazar
 plt.grid(False)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '14_frecuencias_cruzadas_apiladas.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -583,6 +623,8 @@ sns.regplot(
 plt.title('Tendencia: COLUMNA_1 vs COLUMNA_2')   # ← reemplazar
 plt.grid(False)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '15_regresion_lineal.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -608,6 +650,8 @@ plt.title('Evolución temporal')
 plt.xticks(rotation=45, ha='right')
 plt.grid(False)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, '16_evolucion_temporal.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 

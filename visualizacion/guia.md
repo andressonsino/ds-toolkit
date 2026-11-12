@@ -51,6 +51,25 @@ plt.rcParams['figure.figsize'] = (12, 6)  # tamaño por defecto de todos los gr�
 plt.rcParams['font.size'] = 12          # tamaño de fuente base
 plt.rcParams['axes.titlesize'] = 16     # tamaño de títulos
 plt.rcParams['axes.labelsize'] = 13     # tamaño de etiquetas de ejes
+
+import os
+from pathlib import Path
+
+# Rutas de salida — detectan automáticamente la raíz del proyecto (notebooks/, raíz en VS Code o Colab)
+_cwd = Path.cwd()
+if _cwd.name == 'notebooks':
+    BASE_PATH = _cwd.parent
+elif (_cwd / 'data').exists() or (_cwd / 'notebooks').exists() or (_cwd / 'src').exists():
+    BASE_PATH = _cwd
+elif (_cwd.parent / 'data').exists() or (_cwd.parent / 'notebooks').exists():
+    BASE_PATH = _cwd.parent
+else:
+    BASE_PATH = _cwd
+
+OUTPUT_PATH = str(BASE_PATH / 'outputs')
+CLEAN_PATH  = str(BASE_PATH / 'data' / 'clean')
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+os.makedirs(CLEAN_PATH, exist_ok=True)
 ```
 
 > 💡 `sns.set_theme()` reemplaza al `sns.set()` antiguo que genera FutureWarning en versiones recientes de Seaborn.
@@ -79,8 +98,10 @@ plt.title('Título', fontsize=16)      # 3. Título
 plt.xlabel('Etiqueta eje X')          # 4. Etiqueta X
 plt.ylabel('Etiqueta eje Y')          # 5. Etiqueta Y
 plt.xticks(rotation=45)               # 6. Rotación de etiquetas (si se superponen)
-plt.tight_layout()                    # 7. Ajusta márgenes automáticamente
-plt.show()                            # 8. Mostrar
+plt.tight_layout()                                                              # 7. Ajusta márgenes automáticamente
+os.makedirs(OUTPUT_PATH, exist_ok=True)                                         # 8. Crea outputs/ si no existe
+plt.savefig(os.path.join(OUTPUT_PATH, 'grafico.png'), dpi=150, bbox_inches='tight')  # 9. Guardar imagen
+plt.show()                                                                      # 10. Mostrar
 ```
 
 > ⚠️ `plt.figure(figsize=...)` siempre **antes** del gráfico. `plt.show()` siempre **al final**.
@@ -119,6 +140,8 @@ sns.countplot(
 plt.title('Cantidad de ventas por Rubro')
 plt.xticks(rotation=45)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'barras_ventas_rubro.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -139,6 +162,8 @@ for container in p.containers:
     p.bar_label(container, label_type='edge', padding=5)
 
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'barras_etiquetas.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -164,6 +189,8 @@ fmt = ticker.StrMethodFormatter('${x:,.0f}')
 plt.gca().xaxis.set_major_formatter(fmt)
 
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'barras_horizontales_moneda.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -184,6 +211,8 @@ sns.barplot(
 plt.title('Recaudación por Rubro (ordenado)')
 plt.xticks(rotation=45)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'barras_recaudacion_ordenada.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -201,6 +230,8 @@ plt.title('Recaudación por Rubro y Sede')
 plt.xticks(rotation=45)
 plt.legend(title='Sede', bbox_to_anchor=(1.05, 1))
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'barras_agrupadas_sede.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -220,6 +251,8 @@ plt.figure(figsize=(12, 6))
 sns.histplot(data=df_clean, x='Importe')
 plt.title('Distribución de Importes')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'histograma_importes.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -242,6 +275,8 @@ plt.gca().xaxis.set_major_formatter(fmt)
 plt.xticks(rotation=45)
 
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'histograma_importes_moneda.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -257,6 +292,8 @@ sns.histplot(
 )
 plt.title('Distribución de Importes por Sede')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'kde_importes_por_sede.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -277,6 +314,8 @@ plt.figure(figsize=(12, 8))
 sns.boxplot(data=df_clean, x='Satisfaccion_Cliente', y='Sede')
 plt.title('Satisfacción del cliente por Sede')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'boxplot_satisfaccion_sede.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -295,6 +334,8 @@ sns.boxplot(
 plt.title('Satisfacción por Sede — Detección de outliers', fontsize=16)
 plt.xlabel('Satisfacción del cliente')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'boxplot_outliers_satisfaccion.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -305,6 +346,8 @@ sns.boxplot(data=df_clean, x='Satisfaccion_Cliente', y='Sede', palette='pastel')
 sns.swarmplot(data=df_clean, x='Satisfaccion_Cliente', y='Sede', color='black', alpha=0.4, size=3)
 plt.title('Distribución de Satisfacción con puntos reales')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'boxplot_swarmplot_satisfaccion.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -330,6 +373,8 @@ plt.figure(figsize=(12, 6))
 sns.scatterplot(data=df_clean, x='Importe', y='Comision_x_venta')
 plt.title('Relación entre Importe y Comisión')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'scatter_importe_comision.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -347,6 +392,8 @@ sns.scatterplot(
 plt.title('Importe vs Comisión por Sede')
 plt.legend(title='Sede', bbox_to_anchor=(1.05, 1))
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'scatter_importe_comision_sede.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -362,6 +409,8 @@ sns.regplot(
 )
 plt.title('Correlación: Importe vs Comisión')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'regplot_importe_comision.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -388,6 +437,8 @@ sns.lineplot(data=ventas_mes, x='Fecha', y='Importe')
 plt.title('Evolución de ventas por mes')
 plt.xticks(rotation=45)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'lineas_evolucion_mensual.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -405,6 +456,8 @@ plt.title('Evolución de ventas por Sede')
 plt.xticks(rotation=45)
 plt.legend(title='Sede')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'lineas_evolucion_por_sede.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -430,6 +483,8 @@ sns.heatmap(
 )
 plt.title('Mapa de Correlación entre Variables Numéricas', fontsize=16)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'heatmap_correlacion.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -452,6 +507,8 @@ sns.heatmap(
 )
 plt.title('Importe total por Sede y Rubro')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'heatmap_pivote_sede_rubro.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -480,6 +537,8 @@ plt.pie(
 )
 plt.title('Distribución de ventas por Rubro')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'torta_ventas_rubro.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -496,6 +555,8 @@ wedges, texts, autotexts = plt.pie(
 )
 plt.title('Distribución de ventas por Rubro')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'donut_ventas_rubro.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -512,6 +573,8 @@ Muestra la relación entre todas las variables numéricas de una vez. Útil al i
 numericas = df_clean.select_dtypes(include='number').columns.tolist()
 sns.pairplot(df_clean[numericas])
 plt.suptitle('Relaciones entre variables numéricas', y=1.02)
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'pairplot_numericas.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -524,6 +587,8 @@ sns.pairplot(
     plot_kws={'alpha': 0.6}
 )
 plt.suptitle('Pairplot por Sede', y=1.02)
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'pairplot_por_sede.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -646,6 +711,8 @@ sns.histplot(data=df_clean, x='Importe', ax=axes[1])
 axes[1].set_title('Distribución de Importes')
 
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'subplots_barras_histograma.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -675,6 +742,8 @@ sns.scatterplot(data=df_clean, x='Importe', y='Comision_x_venta',
 axes[1, 1].set_title('Importe vs Comisión')
 
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'subplots_grilla_2x2.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -684,22 +753,24 @@ plt.show()
 
 ```python
 # ─── Guardar el último gráfico generado ──────────────────────────────────────
-plt.savefig('grafico.png', dpi=150, bbox_inches='tight')
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'grafico.png'), dpi=150, bbox_inches='tight')
 
 # ─── Alta resolución para presentaciones ─────────────────────────────────────
-plt.savefig('grafico_hd.png', dpi=300, bbox_inches='tight')
+plt.savefig(os.path.join(OUTPUT_PATH, 'grafico_hd.png'), dpi=300, bbox_inches='tight')
 
 # ─── Guardar antes de plt.show() ─────────────────────────────────────────────
 plt.figure(figsize=(12, 6))
 sns.barplot(data=df_clean, x='Rubro', y='Importe', estimator=sum)
 plt.title('Recaudación por Rubro')
 plt.tight_layout()
-plt.savefig('barras_rubro.png', dpi=150, bbox_inches='tight')  # primero guardar
-plt.show()                                                       # después mostrar
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'barras_rubro.png'), dpi=150, bbox_inches='tight')  # primero guardar
+plt.show()                                                                                 # después mostrar
 
 # ─── Descargar en Colab ───────────────────────────────────────────────────────
 from google.colab import files
-files.download('grafico.png')
+files.download(os.path.join(OUTPUT_PATH, 'grafico.png'))
 ```
 
 > ⚠️ `plt.savefig()` siempre **antes** de `plt.show()`. Después del show la figura se borra de memoria.
@@ -723,6 +794,8 @@ for container in p.containers:
 plt.title('Recaudación por Rubro')
 plt.xticks(rotation=45)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'barras_etiquetas_auto.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -742,6 +815,8 @@ ax.annotate(
     color='red'
 )
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'anotacion_punto_especifico.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -767,6 +842,8 @@ ax2.tick_params(axis='y', labelcolor=color2)
 
 plt.title('Ventas y Satisfacción por Mes')
 fig.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'doble_eje_ventas_satisfaccion.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -783,6 +860,8 @@ plt.title('Top 5 Vendedores por Importe')
 fmt = ticker.StrMethodFormatter('${x:,.0f}')
 plt.gca().xaxis.set_major_formatter(fmt)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'top_5_categorias.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -805,6 +884,8 @@ ax2.set_title('2023')
 ax2.tick_params(axis='x', rotation=45)
 
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'comparativa_dos_grupos.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -832,7 +913,8 @@ plt.show()
 plt.savefig('grafico.png')
 
 # Correcto
-plt.savefig('grafico.png')
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'grafico.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -882,7 +964,8 @@ plt.figure(figsize=(12, 6))
 sns.<tipo>(data=df_clean, x='col_x', y='col_y')
 plt.title('Título')
 plt.tight_layout()
-plt.savefig('grafico.png', dpi=150, bbox_inches='tight')  # opcional
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'grafico.png'), dpi=150, bbox_inches='tight')
 plt.show()
 
 # ─── Tipos de gráficos ───────────────────────────────────────────────────────

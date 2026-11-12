@@ -69,9 +69,19 @@ warnings.filterwarnings('ignore')
 pd.options.mode.chained_assignment = None
 pd.set_option('display.max_columns', None)
 
-# Rutas de salida — se crean automáticamente
-OUTPUT_PATH = '../outputs'
-CLEAN_PATH  = '../data/clean'
+# Rutas de salida — detectan automáticamente la raíz del proyecto (notebooks/, raíz en VS Code o Colab)
+_cwd = Path.cwd()
+if _cwd.name == 'notebooks':
+    BASE_PATH = _cwd.parent
+elif (_cwd / 'data').exists() or (_cwd / 'notebooks').exists() or (_cwd / 'src').exists():
+    BASE_PATH = _cwd
+elif (_cwd.parent / 'data').exists() or (_cwd.parent / 'notebooks').exists():
+    BASE_PATH = _cwd.parent
+else:
+    BASE_PATH = _cwd
+
+OUTPUT_PATH = str(BASE_PATH / 'outputs')
+CLEAN_PATH  = str(BASE_PATH / 'data' / 'clean')
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 os.makedirs(CLEAN_PATH, exist_ok=True)
 ```
@@ -540,8 +550,10 @@ df_maestra.sample(10, random_state=42)
 
 ```python
 # Exportar la maestra
-df_maestra.to_csv('maestra_identidades.csv', index=False)
-print('Maestra exportada.')
+os.makedirs(CLEAN_PATH, exist_ok=True)
+ruta_maestra = os.path.join(CLEAN_PATH, 'maestra_identidades.csv')
+df_maestra.to_csv(ruta_maestra, index=False)
+print(f'Maestra exportada en: {ruta_maestra}')
 ```
 
 ---

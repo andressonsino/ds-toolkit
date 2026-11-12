@@ -36,9 +36,21 @@ EXCLUIR_RUIDO   = True               # ← CAMBIAR: True excluye el -1 de DBSCAN
 RANDOM_STATE    = 42
 # ───────────────────────────────────────────────────────────
 
-# Rutas de salida — se crean automáticamente
-OUTPUT_PATH = '../outputs'
-CLEAN_PATH  = '../data/clean'
+from pathlib import Path
+
+# Rutas de salida — detectan automáticamente la raíz del proyecto (notebooks/, raíz en VS Code o Colab)
+_cwd = Path.cwd()
+if _cwd.name == 'notebooks':
+    BASE_PATH = _cwd.parent
+elif (_cwd / 'data').exists() or (_cwd / 'notebooks').exists() or (_cwd / 'src').exists():
+    BASE_PATH = _cwd
+elif (_cwd.parent / 'data').exists() or (_cwd.parent / 'notebooks').exists():
+    BASE_PATH = _cwd.parent
+else:
+    BASE_PATH = _cwd
+
+OUTPUT_PATH = str(BASE_PATH / 'outputs')
+CLEAN_PATH  = str(BASE_PATH / 'data' / 'clean')
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 os.makedirs(CLEAN_PATH, exist_ok=True)
 
@@ -168,6 +180,8 @@ plt.title(f"Perfil de clusters — {COL_CLUSTER}\n(valores normalizados por vari
 plt.xlabel("Cluster")
 plt.ylabel("Variable")
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'perfiles_clusters_heatmap.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -230,6 +244,8 @@ for j in range(i + 1, len(axes)):
 
 plt.suptitle("Distribución de variables por cluster", y=1.02)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'perfiles_clusters_boxplots.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 

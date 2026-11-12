@@ -82,9 +82,21 @@ pd.options.mode.chained_assignment = None
 # Reproducibilidad — siempre fijar semilla
 RANDOM_STATE = 42
 
-# Rutas de salida — se crean automáticamente
-OUTPUT_PATH = '../outputs'
-CLEAN_PATH  = '../data/clean'
+from pathlib import Path
+
+# Rutas de salida — detectan automáticamente la raíz del proyecto (notebooks/, raíz en VS Code o Colab)
+_cwd = Path.cwd()
+if _cwd.name == 'notebooks':
+    BASE_PATH = _cwd.parent
+elif (_cwd / 'data').exists() or (_cwd / 'notebooks').exists() or (_cwd / 'src').exists():
+    BASE_PATH = _cwd
+elif (_cwd.parent / 'data').exists() or (_cwd.parent / 'notebooks').exists():
+    BASE_PATH = _cwd.parent
+else:
+    BASE_PATH = _cwd
+
+OUTPUT_PATH = str(BASE_PATH / 'outputs')
+CLEAN_PATH  = str(BASE_PATH / 'data' / 'clean')
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 os.makedirs(CLEAN_PATH, exist_ok=True)
 ```
@@ -94,7 +106,7 @@ os.makedirs(CLEAN_PATH, exist_ok=True)
 ## 2. Carga del dataset limpio
 
 ```python
-df_clean = pd.read_csv('NOMBRE_ARCHIVO_limpio.csv')  # ← reemplazar
+df_clean = pd.read_csv(os.path.join(CLEAN_PATH, 'NOMBRE_ARCHIVO_limpio.csv'))  # ← reemplazar
 print(f'Dataset cargado: {df_clean.shape[0]} filas x {df_clean.shape[1]} columnas')
 df_clean.head()
 ```
@@ -328,6 +340,8 @@ plt.title('Matriz de Confusión')
 plt.ylabel('Real')
 plt.xlabel('Predicho')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'ml_matriz_confusion.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -345,6 +359,8 @@ plt.ylabel('Tasa de Verdaderos Positivos')
 plt.title('Curva ROC')
 plt.legend()
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'ml_curva_roc.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -362,6 +378,8 @@ sns.barplot(x=importancias.values[:15], y=importancias.index[:15],   # top 15
 plt.title('Importancia de Features (Top 15)')
 plt.xlabel('Importancia')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'ml_feature_importance.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -390,6 +408,8 @@ plt.xlabel('Valor real')
 plt.ylabel('Valor predicho')
 plt.title('Real vs Predicho')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'ml_real_vs_predicho.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -444,6 +464,8 @@ plt.ylim(0, 1)
 plt.xticks(rotation=15)
 plt.legend(title='Métrica')
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'ml_comparativa_modelos.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
@@ -499,17 +521,18 @@ modelo.fit(X_train, y_train)
 import joblib
 
 # Guardar
-joblib.dump(modelo, 'modelo_entrenado.pkl')
-print('Modelo guardado como modelo_entrenado.pkl')
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+joblib.dump(modelo, os.path.join(OUTPUT_PATH, 'modelo_entrenado.pkl'))
+print(f"Modelo guardado en: {os.path.join(OUTPUT_PATH, 'modelo_entrenado.pkl')}")
 
 # Guardar también el scaler si escalaste
-joblib.dump(scaler, 'scaler.pkl')
+joblib.dump(scaler, os.path.join(OUTPUT_PATH, 'scaler.pkl'))
 ```
 
 ```python
 # Cargar en otro notebook o en producción
-modelo_cargado = joblib.load('modelo_entrenado.pkl')
-scaler_cargado = joblib.load('scaler.pkl')
+modelo_cargado = joblib.load(os.path.join(OUTPUT_PATH, 'modelo_entrenado.pkl'))
+scaler_cargado = joblib.load(os.path.join(OUTPUT_PATH, 'scaler.pkl'))
 
 # Predecir con datos nuevos
 # X_nuevo = scaler_cargado.transform(X_nuevo)

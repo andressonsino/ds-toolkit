@@ -34,6 +34,29 @@
 
 ---
 
+## 0. Configuración de rutas de salida
+
+```python
+import os
+from pathlib import Path
+
+# Rutas de salida — detectan automáticamente la raíz del proyecto (notebooks/, raíz en VS Code o Colab)
+_cwd = Path.cwd()
+if _cwd.name == 'notebooks':
+    BASE_PATH = _cwd.parent
+elif (_cwd / 'data').exists() or (_cwd / 'notebooks').exists() or (_cwd / 'src').exists():
+    BASE_PATH = _cwd
+elif (_cwd.parent / 'data').exists() or (_cwd.parent / 'notebooks').exists():
+    BASE_PATH = _cwd.parent
+else:
+    BASE_PATH = _cwd
+
+OUTPUT_PATH = str(BASE_PATH / 'outputs')
+CLEAN_PATH  = str(BASE_PATH / 'data' / 'clean')
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+os.makedirs(CLEAN_PATH, exist_ok=True)
+```
+
 ## 1. Diagnóstico inicial
 
 **Ejecutar completo antes de tocar cualquier dato. Nunca saltear esta sección.**
@@ -634,7 +657,8 @@ df_raw.head(10)
 df_clean = df_raw.copy()
 
 # Exportar
-nombre_salida = 'data/clean/NOMBRE_DATASET_clean.csv'    # ← reemplazar
+os.makedirs(CLEAN_PATH, exist_ok=True)
+nombre_salida = os.path.join(CLEAN_PATH, 'NOMBRE_DATASET_clean.csv')    # ← reemplazar
 df_clean.to_csv(nombre_salida, index=False, encoding='utf-8')
 print(f'Dataset exportado: {nombre_salida}')
 print(f'Filas: {df_clean.shape[0]} | Columnas: {df_clean.shape[1]}')

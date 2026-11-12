@@ -64,9 +64,21 @@ MAX_RUIDO_PCT   = 10      # ← CAMBIAR: porcentaje máximo de ruido aceptable
 TOP_N_COMBOS    = 15      # ← CAMBIAR: cuántas mejores combinaciones mostrar
 # ───────────────────────────────────────────────────────────
 
-# Rutas de salida — se crean automáticamente
-OUTPUT_PATH = '../outputs'
-CLEAN_PATH  = '../data/clean'
+from pathlib import Path
+
+# Rutas de salida — detectan automáticamente la raíz del proyecto (notebooks/, raíz en VS Code o Colab)
+_cwd = Path.cwd()
+if _cwd.name == 'notebooks':
+    BASE_PATH = _cwd.parent
+elif (_cwd / 'data').exists() or (_cwd / 'notebooks').exists() or (_cwd / 'src').exists():
+    BASE_PATH = _cwd
+elif (_cwd.parent / 'data').exists() or (_cwd.parent / 'notebooks').exists():
+    BASE_PATH = _cwd.parent
+else:
+    BASE_PATH = _cwd
+
+OUTPUT_PATH = str(BASE_PATH / 'outputs')
+CLEAN_PATH  = str(BASE_PATH / 'data' / 'clean')
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 os.makedirs(CLEAN_PATH, exist_ok=True)
 ```
@@ -145,6 +157,8 @@ plt.axhline(
     label='Referencia percentil 90'
 )
 plt.legend()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'dbscan_k_distance_plot.png'), dpi=150, bbox_inches='tight')
 plt.show()
 
 print(f"Percentil 80: {np.percentile(distancias_ordenadas, 80):.2f}")
@@ -395,6 +409,8 @@ plt.title(f"DBSCAN — eps={EPS_FINAL}, min_samples={MIN_SAMPLES_FINAL}\n"
 plt.legend()
 plt.grid(alpha=0.3)
 plt.tight_layout()
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+plt.savefig(os.path.join(OUTPUT_PATH, 'dbscan_clusters_pca.png'), dpi=150, bbox_inches='tight')
 plt.show()
 ```
 
