@@ -26,6 +26,7 @@ ocasionales"*
 ```python
 import pandas as pd
 import numpy as np
+import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -34,6 +35,12 @@ COL_CLUSTER     = "cluster_dbscan"   # ← CAMBIAR: nombre de la columna de clus
 EXCLUIR_RUIDO   = True               # ← CAMBIAR: True excluye el -1 de DBSCAN
 RANDOM_STATE    = 42
 # ───────────────────────────────────────────────────────────
+
+# Rutas de salida — se crean automáticamente
+OUTPUT_PATH = '../outputs'
+CLEAN_PATH  = '../data/clean'
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+os.makedirs(CLEAN_PATH, exist_ok=True)
 
 # Si usás DBSCAN y querés excluir el ruido del perfilado
 if EXCLUIR_RUIDO:

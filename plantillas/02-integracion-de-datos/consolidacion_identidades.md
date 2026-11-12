@@ -59,6 +59,7 @@ Regla 3: Sin DNI + sin email → NO identificable → se descarta
 ```python
 import pandas as pd
 import numpy as np
+import os
 import unicodedata
 import re
 import warnings
@@ -67,6 +68,12 @@ from pathlib import Path
 warnings.filterwarnings('ignore')
 pd.options.mode.chained_assignment = None
 pd.set_option('display.max_columns', None)
+
+# Rutas de salida — se crean automáticamente
+OUTPUT_PATH = '../outputs'
+CLEAN_PATH  = '../data/clean'
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+os.makedirs(CLEAN_PATH, exist_ok=True)
 ```
 
 ---

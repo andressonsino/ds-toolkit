@@ -81,6 +81,12 @@ pd.options.mode.chained_assignment = None
 
 # Reproducibilidad — siempre fijar semilla
 RANDOM_STATE = 42
+
+# Rutas de salida — se crean automáticamente
+OUTPUT_PATH = '../outputs'
+CLEAN_PATH  = '../data/clean'
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+os.makedirs(CLEAN_PATH, exist_ok=True)
 ```
 
 ---

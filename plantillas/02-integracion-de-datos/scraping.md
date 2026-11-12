@@ -69,6 +69,12 @@ HEADERS = {
     "Connection": "keep-alive",
 }
 
+# Rutas de salida — se crean automáticamente
+OUTPUT_PATH = '../outputs'
+CLEAN_PATH  = '../data/clean'
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+os.makedirs(CLEAN_PATH, exist_ok=True)
+
 print("Configuración lista")
 ```
 

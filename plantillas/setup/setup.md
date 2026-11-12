@@ -14,6 +14,12 @@ pd.options.mode.chained_assignment = None
 pd.set_option('display.max_columns', None)   # muestra todas las columnas
 pd.set_option('display.max_rows', 100)
 pd.set_option('display.float_format', '{:.2f}'.format)
+
+# Rutas de salida — se crean automáticamente
+OUTPUT_PATH = '../outputs'
+CLEAN_PATH  = '../data/clean'
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+os.makedirs(CLEAN_PATH, exist_ok=True)
 ```
 ## 2. Setup cuaderno monolítico (end to end)
 
@@ -41,4 +47,10 @@ sns.set_palette('husl')
 plt.rcParams['figure.figsize'] = (12, 6)
 plt.rcParams['axes.titlesize'] = 16
 plt.rcParams['axes.labelsize'] = 13
+
+# Rutas de salida — se crean automáticamente
+OUTPUT_PATH = '../outputs'
+CLEAN_PATH  = '../data/clean'
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+os.makedirs(CLEAN_PATH, exist_ok=True)
 ```

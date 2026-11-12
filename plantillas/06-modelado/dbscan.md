@@ -49,6 +49,7 @@ del radio eps para que un punto sea considerado "núcleo".
 ```python
 import numpy as np
 import pandas as pd
+import os
 import matplotlib.pyplot as plt
 
 from sklearn.cluster import DBSCAN
@@ -62,6 +63,12 @@ RANDOM_STATE    = 42
 MAX_RUIDO_PCT   = 10      # ← CAMBIAR: porcentaje máximo de ruido aceptable
 TOP_N_COMBOS    = 15      # ← CAMBIAR: cuántas mejores combinaciones mostrar
 # ───────────────────────────────────────────────────────────
+
+# Rutas de salida — se crean automáticamente
+OUTPUT_PATH = '../outputs'
+CLEAN_PATH  = '../data/clean'
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+os.makedirs(CLEAN_PATH, exist_ok=True)
 ```
 
 ---

@@ -77,6 +77,12 @@ plt.rcParams['axes.labelsize'] = 13
 
 # Reproducibilidad
 RANDOM_STATE = 42
+
+# Rutas de salida — se crean automáticamente
+OUTPUT_PATH = '../outputs'
+CLEAN_PATH  = '../data/clean'
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+os.makedirs(CLEAN_PATH, exist_ok=True)
 ```
 
 ---

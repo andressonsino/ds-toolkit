@@ -40,6 +40,7 @@
 ```python
 import pandas as pd
 import numpy as np
+import os
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import seaborn as sns
@@ -56,6 +57,12 @@ sns.set_palette('husl')
 plt.rcParams['figure.figsize'] = (12, 6)
 plt.rcParams['axes.titlesize'] = 16
 plt.rcParams['axes.labelsize'] = 13
+
+# Rutas de salida — se crean automáticamente
+OUTPUT_PATH = '../outputs'
+CLEAN_PATH  = '../data/clean'
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+os.makedirs(CLEAN_PATH, exist_ok=True)
 ```
 
 ---
