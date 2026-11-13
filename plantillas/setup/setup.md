@@ -13,7 +13,7 @@ pd.options.mode.chained_assignment = None
 # Configuración de visualización del DataFrame
 pd.set_option('display.max_columns', None)   # muestra todas las columnas
 pd.set_option('display.max_rows', 100)
-pd.set_option('display.float_format', '{:.2f}'.format)
+pd.set_option('display.float_format', lambda x: f'{x:,.2f}')
 
 from pathlib import Path
 
@@ -51,7 +51,7 @@ pd.options.mode.chained_assignment = None
 # Configuración de visualización del DataFrame
 pd.set_option('display.max_columns', None)   # muestra todas las columnas
 pd.set_option('display.max_rows', 100)
-pd.set_option('display.float_format', '{:.2f}'.format)
+pd.set_option('display.float_format', lambda x: f'{x:,.2f}')
 
 # Configuración de gráficos
 sns.set_theme(style='whitegrid')

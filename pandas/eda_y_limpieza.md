@@ -66,7 +66,7 @@ pd.options.mode.chained_assignment = None  # suprime SettingWithCopyWarning
 # ─── Configuración de visualización ────────────────────────────────────────
 pd.set_option('display.max_columns', None)   # muestra todas las columnas
 pd.set_option('display.max_rows', 100)       # muestra hasta 100 filas
-pd.set_option('display.float_format', '{:.2f}'.format)  # 2 decimales
+pd.set_option('display.float_format', lambda x: f'{x:,.2f}')  # 2 decimales y separador de miles
 plt.style.use('seaborn-v0_8')               # estilo de gráficos profesional
 sns.set_palette('husl')                      # paleta de colores
 
@@ -176,7 +176,8 @@ print(f'\nFilas duplicadas: {df_raw.duplicated().sum()}')
 
 # ─── Estadísticas descriptivas ─────────────────────────────────────────────
 print('\n--- Estadísticas descriptivas ---')
-display(df_raw.describe())
+# .T transpuesto para leer variables verticalmente
+display(df_raw.describe().T)
 
 ```
 ### 3.1 Backup de columnas sensibles (opcional pero recomendado)

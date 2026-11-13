@@ -51,6 +51,11 @@ import math
 warnings.filterwarnings('ignore')
 pd.options.mode.chained_assignment = None
 
+# Configuración de visualización del DataFrame
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', 100)
+pd.set_option('display.float_format', lambda x: f'{x:,.2f}')
+
 # Configuración de gráficos
 sns.set_theme(style='whitegrid')
 sns.set_palette('husl')
@@ -133,7 +138,7 @@ df_clean.info()
 
 ```python
 # Estadísticas descriptivas de variables numéricas
-df_clean.describe()
+df_clean.describe().T
 ```
 
 ```python

@@ -9,6 +9,7 @@
 
 ## Tabla de Contenidos
 
+0. [Setup inicial](#0-setup-inicial)
 1. [Diagnóstico inicial](#1-diagnóstico-inicial)
 2. [Duplicados](#2-duplicados)
 3. [Valores nulos (NaN)](#3-valores-nulos-nan)
@@ -34,11 +35,23 @@
 
 ---
 
-## 0. Configuración de rutas de salida
+## 0. Setup inicial
 
 ```python
 import os
+import warnings
 from pathlib import Path
+import numpy as np
+import pandas as pd
+
+# Supresión de warnings
+warnings.filterwarnings('ignore')
+pd.options.mode.chained_assignment = None
+
+# Configuración de visualización del DataFrame (evita notación científica y exceso de decimales)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', 100)
+pd.set_option('display.float_format', lambda x: f'{x:,.2f}')
 
 # Rutas de salida — detectan automáticamente la raíz del proyecto (notebooks/, raíz en VS Code o Colab)
 _cwd = Path.cwd()
@@ -94,7 +107,14 @@ print(f'\nFilas duplicadas: {df_raw.duplicated().sum()}')
 
 # ─── Estadísticas descriptivas ─────────────────────────────────────────────
 print('\n--- Estadísticas descriptivas ---')
-display(df_raw.describe())
+# .T (transpuesto): muestra cada variable en una fila y las métricas en columnas (count, mean, std, etc.),
+# evitando el scroll horizontal infinito cuando el dataset tiene muchas columnas.
+display(df_raw.describe().T)
+
+# Tip: si tenés columnas de IDs cuya media no tiene sentido estadístico (ej. user_id, order_id),
+# podés excluirlas antes de describir:
+# cols_stats = [c for c in df_raw.select_dtypes(include='number').columns if 'id' not in c.lower()]
+# display(df_raw[cols_stats].describe().T)
 ```
 
 ---
